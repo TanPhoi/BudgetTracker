@@ -4,7 +4,6 @@ import {colors} from '@/themes/colors';
 import {img_logo4, img_onboarding} from '@/assets/images';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
-import {Text} from 'react-native-svg';
 
 type SplashProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'Splash'>;

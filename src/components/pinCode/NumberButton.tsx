@@ -1,3 +1,4 @@
+import {colors} from '@/themes/colors';
 import React, {JSX} from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.pureWhite,
     fontSize: 36,
     fontWeight: '700',
     letterSpacing: 0.54,

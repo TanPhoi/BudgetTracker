@@ -33,6 +33,7 @@ import UploadIcon from '@/assets/svg/UploadIcon.svg';
 import VolumeIcon from '@/assets/svg/VolumeIcon.svg';
 import CardIcon from '@/assets/svg/CardIcon.svg';
 import UserIcon from '@/assets/svg/UserIcon.svg';
+import ArrowLeft from '@/assets/svg/ArrowLeft.svg';
 
 export {
   AddIcon,
@@ -70,4 +71,5 @@ export {
   AlertBoxIcon,
   ArchiveIcon,
   ArrowDownIcon,
+  ArrowLeft,
 };

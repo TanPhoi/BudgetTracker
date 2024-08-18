@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {PinCode, Splash} from '@/screens';
 import {colors} from '@/themes/colors';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigation from '@/routers/TabNavigation';
+import getStorageData from '@/utils/getStorageData';
+import setStorageData from '@/utils/setStorageData';
 
 export type RootStackParamsList = {
   Splash: undefined;
@@ -13,13 +15,31 @@ export type RootStackParamsList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamsList>();
-
 const AppNavigation = (): JSX.Element => {
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // if (loading) {
-  //   return <View style={styles.loadingContainer}></View>;
-  // }
+  useEffect(() => {
+    const checkAppState = (): void => {
+      getStorageData('isFirstLaunch')
+        .then(firstLaunch => {
+          if (!firstLaunch) {
+            setStorageData('isFirstLaunch', 'true');
+            setIsFirstLaunch(false);
+          } else {
+            setIsFirstLaunch(true);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    };
+    checkAppState();
+  }, []);
+
+  if (loading) {
+    return <View style={styles.loadingContainer}></View>;
+  }
 
   return (
     <NavigationContainer>
@@ -27,7 +47,7 @@ const AppNavigation = (): JSX.Element => {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Splash" component={Splash} />
+        {!isFirstLaunch && <Stack.Screen name="Splash" component={Splash} />}
         <Stack.Screen name="PinCode" component={PinCode} />
         <Stack.Screen name="TabNavigation" component={TabNavigation} />
       </Stack.Navigator>
@@ -40,7 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.pureWhite,
+    backgroundColor: colors.midnightBlack,
   },
 });
 

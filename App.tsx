@@ -7,13 +7,16 @@
 
 import React from 'react';
 import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
-import {colors} from '@/themes/colors';
 import AppNavigation from '@/routers/AppNavigation';
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.back} />
+      <StatusBar
+        barStyle="light-content"
+        translucent={true}
+        backgroundColor="transparent"
+      />
       <AppNavigation />
     </SafeAreaView>
   );

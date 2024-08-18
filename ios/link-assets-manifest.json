@@ -1,0 +1,29 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/themes/fonts/Century-Gothic.ttf",
+      "sha1": "6e1179475f9a806d6a77ac475c1cb405e12f577a"
+    },
+    {
+      "path": "src/themes/fonts/DMSans-Bold.ttf",
+      "sha1": "e2465f11006633e4e4ac7652b543adfa6f0c26cd"
+    },
+    {
+      "path": "src/themes/fonts/DMSans-Medium.ttf",
+      "sha1": "65cb79753017741ff95b1ecd1689d56e96e2edbd"
+    },
+    {
+      "path": "src/themes/fonts/Gelasio.ttf",
+      "sha1": "f93d930f5fc400c2a479ed85a93327a93618d24c"
+    },
+    {
+      "path": "src/themes/fonts/Poppins.ttf",
+      "sha1": "875cf0cecd647bcf22e79d633d868c1b1ec98dfa"
+    },
+    {
+      "path": "src/themes/fonts/Syne.ttf",
+      "sha1": "2830f4a34f1c36916b5a49bdf9bce409e123f28f"
+    }
+  ]
+}

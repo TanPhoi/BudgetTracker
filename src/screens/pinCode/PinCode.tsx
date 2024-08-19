@@ -1,12 +1,3 @@
-import {img_enter_pin} from '@/assets/images';
-import {ArrowLeft} from '@/assets/svg';
-import NumberButton from '@/components/pinCode/NumberButton';
-import {RootStackParamsList} from '@/routers/AppNavigation';
-import {colors} from '@/themes/colors';
-import {spacing} from '@/themes/spacing';
-import getStorageData from '@/utils/getStorageData';
-import setStorageData from '@/utils/setStorageData';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
@@ -14,69 +5,49 @@ import {
   View,
   TouchableOpacity,
   Animated,
-  Image,
+  ImageBackground,
 } from 'react-native';
+import {img_enter_pin} from '@/assets/images';
+import {ArrowLeft} from '@/assets/svg';
+import NumberButton from '@/components/pinCode/NumberButton';
+import {RootStackParamsList} from '@/routers/AppNavigation';
+import {colors} from '@/themes/colors';
+import {spacing} from '@/themes/spacing';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {getPin, setPin} from '@/services/firebaseService';
+import {triggerShake} from '@/animations/shakeAnimation';
 
 type PinCodeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'PinCode'>;
 };
 
 const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
-  const [pin, setPin] = useState<string>('');
+  const [pin, setPinState] = useState<string>('');
   const [storedPin, setStoredPin] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
   const shakeAnimation = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    const checkStoredPin = (): void => {
-      getStorageData<string>('pin').then(savedPin => {
-        setStoredPin(savedPin || '');
-      });
-    };
-    checkStoredPin();
-  }, []);
 
-  const triggerShake = (): void => {
-    Animated.sequence([
-      Animated.timing(shakeAnimation, {
-        toValue: 10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
+  useEffect(() => {
+    getPin().then(pin => setStoredPin(pin));
+  }, []);
 
   const handlePress = (value: string): void => {
     if (pin.length < 4) {
-      setPin(prevPin => prevPin + value);
+      setPinState(prevPin => prevPin + value);
     }
   };
 
   const handleSubmit = (): void => {
     if (!storedPin && pin.length === 4) {
-      setStorageData('pin', pin).then(() => {
+      setPin(pin).then(() => {
         navigation.navigate('TabNavigation');
       });
     } else {
       if (pin !== storedPin) {
         setIsError(true);
-        triggerShake();
+        triggerShake(shakeAnimation);
         setTimeout(() => {
-          setPin('');
+          setPinState('');
           setIsError(false);
         }, 1000);
       } else {
@@ -87,52 +58,53 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <Image source={img_enter_pin} style={styles.imgEnterPin} />
-      <Text style={styles.title}>Enter Pin</Text>
-      <Animated.View
-        style={[
-          styles.pinDisplay,
-          {transform: [{translateX: shakeAnimation}]},
-        ]}>
-        {Array.from({length: 4}, (_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.pinBox,
-              pin.length > index && styles.pinFilled,
-              isError && styles.pinError,
-            ]}
-          />
-        ))}
-      </Animated.View>
-
-      <View style={styles.buttonContainer}>
-        <View style={styles.buttonRow}>
-          {['1', '2', '3'].map(value => (
-            <NumberButton key={value} text={value} onPress={handlePress} />
+      <ImageBackground source={img_enter_pin} style={styles.imgEnterPin}>
+        <Text style={styles.title}>Enter Pin</Text>
+        <Animated.View
+          style={[
+            styles.pinDisplay,
+            {transform: [{translateX: shakeAnimation}]},
+          ]}>
+          {Array.from({length: 4}, (_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.pinBox,
+                pin.length > index && styles.pinFilled,
+                isError && styles.pinError,
+              ]}
+            />
           ))}
-        </View>
-        <View style={styles.buttonRow}>
-          {['4', '5', '6'].map(value => (
-            <NumberButton key={value} text={value} onPress={handlePress} />
-          ))}
-        </View>
-        <View style={styles.buttonRow}>
-          {['7', '8', '9'].map(value => (
-            <NumberButton key={value} text={value} onPress={handlePress} />
-          ))}
-        </View>
+        </Animated.View>
 
-        <View style={styles.buttonRow}>
-          <View style={styles.boxNumber} />
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonRow}>
+            {['1', '2', '3'].map(value => (
+              <NumberButton key={value} text={value} onPress={handlePress} />
+            ))}
+          </View>
+          <View style={styles.buttonRow}>
+            {['4', '5', '6'].map(value => (
+              <NumberButton key={value} text={value} onPress={handlePress} />
+            ))}
+          </View>
+          <View style={styles.buttonRow}>
+            {['7', '8', '9'].map(value => (
+              <NumberButton key={value} text={value} onPress={handlePress} />
+            ))}
+          </View>
 
-          <NumberButton text="0" onPress={handlePress} />
+          <View style={styles.buttonRow}>
+            <View style={styles.boxNumber} />
 
-          <TouchableOpacity style={styles.boxNumber} onPress={handleSubmit}>
-            <ArrowLeft width={36} height={36} />
-          </TouchableOpacity>
+            <NumberButton text="0" onPress={handlePress} />
+
+            <TouchableOpacity style={styles.boxNumber} onPress={handleSubmit}>
+              <ArrowLeft width={36} height={36} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -141,14 +113,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.midnightBlack,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   imgEnterPin: {
-    position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     marginBottom: spacing.s90,
@@ -185,9 +156,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: spacing.s46,
-  },
-  emptyButton: {
-    backgroundColor: 'red',
   },
   boxNumber: {
     width: 40,

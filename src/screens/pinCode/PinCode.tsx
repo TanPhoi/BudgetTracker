@@ -14,8 +14,8 @@ import {RootStackParamsList} from '@/routers/AppNavigation';
 import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {getPin, setPin} from '@/services/firebaseService';
 import {triggerShake} from '@/animations/shakeAnimation';
+import {getPin, setPin} from '@/services/authentication';
 
 type PinCodeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'PinCode'>;
@@ -31,13 +31,19 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
     getPin().then(pin => setStoredPin(pin));
   }, []);
 
+  useEffect(() => {
+    if (pin.length === 4) {
+      submitOnPinComplete();
+    }
+  }, [pin]);
+
   const handlePress = (value: string): void => {
     if (pin.length < 4) {
       setPinState(prevPin => prevPin + value);
     }
   };
 
-  const handleSubmit = (): void => {
+  const submitOnPinComplete = (): void => {
     if (!storedPin && pin.length === 4) {
       setPin(pin).then(() => {
         navigation.navigate('TabNavigation');
@@ -54,6 +60,10 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
         navigation.navigate('TabNavigation');
       }
     }
+  };
+
+  const removeLastDigit = (): void => {
+    setPinState(prevPin => prevPin.slice(0, -1));
   };
 
   return (
@@ -99,7 +109,9 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
 
             <NumberButton text="0" onPress={handlePress} />
 
-            <TouchableOpacity style={styles.boxNumber} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={styles.boxNumber}
+              onPress={removeLastDigit}>
               <ArrowLeft width={36} height={36} />
             </TouchableOpacity>
           </View>
@@ -122,7 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    marginBottom: spacing.s90,
+    marginBottom: spacing.xxx,
     color: colors.pureWhite,
     fontSize: 24,
     fontWeight: '700',
@@ -131,7 +143,7 @@ const styles = StyleSheet.create({
   },
   pinDisplay: {
     flexDirection: 'row',
-    marginBottom: spacing.s20,
+    marginBottom: spacing.md,
     columnGap: 40,
   },
   pinBox: {
@@ -155,7 +167,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: spacing.s46,
+    marginBottom: spacing.xsl,
   },
   boxNumber: {
     width: 40,

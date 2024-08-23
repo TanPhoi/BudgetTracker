@@ -1,12 +1,7 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
 import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import DrawerNavigator from '@/routers/DrawerNavigator';
 import AppNavigation from '@/routers/AppNavigation';
 
 function App(): React.JSX.Element {
@@ -17,7 +12,7 @@ function App(): React.JSX.Element {
         translucent={true}
         backgroundColor="transparent"
       />
-      <AppNavigation />
+      <DrawerNavigator />
     </SafeAreaView>
   );
 }

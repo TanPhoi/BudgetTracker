@@ -34,6 +34,18 @@ import VolumeIcon from '@/assets/svg/VolumeIcon.svg';
 import CardIcon from '@/assets/svg/CardIcon.svg';
 import UserIcon from '@/assets/svg/UserIcon.svg';
 import ArrowLeft from '@/assets/svg/ArrowLeft.svg';
+import RecieptsIcon from '@/assets/svg/RecieptsIcon.svg';
+import Card2 from '@/assets/svg/Card2.svg';
+import AddCircle from '@/assets/svg/AddCircle.svg';
+import CVVIcon from '@/assets/svg/CVVIcon.svg';
+import TodoIcon from '@/assets/svg/TodoIcon.svg';
+import CloseIcon from '@/assets/svg/CloseIcon.svg';
+import AddToCartIcon from '@/assets/svg/AddToCartIcon.svg';
+import TshirtIcon from '@/assets/svg/TshirtIcon.svg';
+import AddPriceIcon from '@/assets/svg/AddPriceIcon.svg';
+import UserGroupsIcon from '@/assets/svg/UserGroupsIcon.svg';
+import BusFrontIcon from '@/assets/svg/BusFrontIcon.svg';
+import Monitor from '@/assets/svg/Monitor.svg';
 
 export {
   AddIcon,
@@ -72,4 +84,16 @@ export {
   ArchiveIcon,
   ArrowDownIcon,
   ArrowLeft,
+  RecieptsIcon,
+  Card2,
+  AddCircle,
+  CVVIcon,
+  TodoIcon,
+  CloseIcon,
+  AddToCartIcon,
+  TshirtIcon,
+  AddPriceIcon,
+  UserGroupsIcon,
+  BusFrontIcon,
+  Monitor,
 };

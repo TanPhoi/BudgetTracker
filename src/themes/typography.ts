@@ -1,0 +1,100 @@
+import {StyleSheet} from 'react-native';
+import {colors} from './colors';
+
+export const typography = StyleSheet.create({
+  Heading: {
+    color: colors.pureWhite,
+    fontFamily: 'Syne',
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: 0.36,
+  },
+  Heading1: {
+    color: colors.pureWhite,
+    fontFamily: 'Syne',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  Heading2: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 36,
+    fontWeight: '700',
+    letterSpacing: 0.54,
+  },
+  Heading3: {
+    color: colors.goldenRod,
+    fontFamily: 'DMSans',
+    letterSpacing: 0.21,
+  },
+  Heading4: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 24,
+    fontWeight: '500',
+    letterSpacing: 0.36,
+  },
+  Heading5: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 16,
+    fontWeight: '500',
+    letterSpacing: 0.24,
+  },
+  Heading6: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.24,
+  },
+  Heading7: {
+    color: colors.softLavender,
+    fontFamily: 'DMSans',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  Heading8: {
+    color: colors.goldenRod,
+    fontFamily: 'Syne',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.24,
+  },
+  Heading9: {
+    color: colors.softLavender,
+    fontFamily: 'Syne',
+    fontSize: 13,
+    letterSpacing: 0.65,
+  },
+  Heading10: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 15,
+    fontWeight: '500',
+    letterSpacing: 0.225,
+  },
+  Heading11: {
+    color: colors.pureWhite,
+    fontFamily: 'DMSans',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: 0.225,
+  },
+  Heading12: {
+    color: colors.pureWhite,
+    fontFamily: 'Poppins',
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 0.75,
+  },
+  Heading13: {
+    color: colors.pureWhite,
+    fontFamily: 'Century-Gothic',
+    fontSize: 64,
+    fontWeight: '700',
+    letterSpacing: 0.96,
+  },
+});

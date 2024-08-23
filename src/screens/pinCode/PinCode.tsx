@@ -16,6 +16,7 @@ import {spacing} from '@/themes/spacing';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {triggerShake} from '@/animations/shakeAnimation';
 import {getPin, setPin} from '@/services/authentication';
+import {typography} from '@/themes/typography';
 
 type PinCodeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'PinCode'>;
@@ -46,7 +47,10 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
   const submitOnPinComplete = (): void => {
     if (!storedPin && pin.length === 4) {
       setPin(pin).then(() => {
-        navigation.navigate('TabNavigation');
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'TabNavigation'}],
+        });
       });
     } else {
       if (pin !== storedPin) {
@@ -57,7 +61,10 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
           setIsError(false);
         }, 1000);
       } else {
-        navigation.navigate('TabNavigation');
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'TabNavigation'}],
+        });
       }
     }
   };
@@ -69,7 +76,7 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <ImageBackground source={img_enter_pin} style={styles.imgEnterPin}>
-        <Text style={styles.title}>Enter Pin</Text>
+        <Text style={[styles.title, typography.Heading]}>Enter Pin</Text>
         <Animated.View
           style={[
             styles.pinDisplay,
@@ -135,11 +142,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: spacing.xxx,
-    color: colors.pureWhite,
-    fontSize: 24,
-    fontWeight: '700',
-    fontFamily: 'Syne',
-    letterSpacing: 0.36,
   },
   pinDisplay: {
     flexDirection: 'row',

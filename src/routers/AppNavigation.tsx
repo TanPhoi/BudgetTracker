@@ -1,17 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {PinCode, Splash} from '@/screens';
+import {AddExpense, OptionExpense, PinCode, Splash} from '@/screens';
 import {colors} from '@/themes/colors';
-import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigation from '@/routers/TabNavigation';
 import getStorageData from '@/utils/getStorageData';
 import setStorageData from '@/utils/setStorageData';
+import {ExpenseType} from '@/models/expenseType.model';
 
 export type RootStackParamsList = {
   Splash: undefined;
   PinCode: undefined;
   TabNavigation: undefined;
+  AddExpense: {expense: ExpenseType} | undefined;
+  OptionExpense: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamsList>();
@@ -42,16 +44,16 @@ const AppNavigation = (): JSX.Element => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        {!isFirstLaunch && <Stack.Screen name="Splash" component={Splash} />}
-        <Stack.Screen name="PinCode" component={PinCode} />
-        <Stack.Screen name="TabNavigation" component={TabNavigation} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      {!isFirstLaunch && <Stack.Screen name="Splash" component={Splash} />}
+      <Stack.Screen name="PinCode" component={PinCode} />
+      <Stack.Screen name="TabNavigation" component={TabNavigation} />
+      <Stack.Screen name="AddExpense" component={AddExpense} />
+      <Stack.Screen name="OptionExpense" component={OptionExpense} />
+    </Stack.Navigator>
   );
 };
 

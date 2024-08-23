@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" viewBox="0 0 20 12" fill="none">
-  <line x1="1.41421" y1="2.37036" x2="9.44263" y2="10.3988" stroke="white" stroke-width="2" stroke-linecap="round"/>
-  <line x1="9.62963" y1="10.5858" x2="18.5858" y2="1.62963" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="1.41421" y1="2.37036" x2="9.44263" y2="10.3988" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="9.62963" y1="10.5858" x2="18.5858" y2="1.62963" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
 </svg>

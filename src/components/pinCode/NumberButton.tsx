@@ -1,4 +1,5 @@
 import {colors} from '@/themes/colors';
+import {typography} from '@/themes/typography';
 import React, {JSX} from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
@@ -10,7 +11,7 @@ type NumberButtonProps = {
 const NumberButton = ({text, onPress}: NumberButtonProps): JSX.Element => {
   return (
     <TouchableOpacity style={styles.box} onPress={(): void => onPress(text)}>
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={typography.Heading2}>{text}</Text>
     </TouchableOpacity>
   );
 };
@@ -21,13 +22,6 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    color: colors.pureWhite,
-    fontSize: 36,
-    fontWeight: '700',
-    letterSpacing: 0.54,
-    fontFamily: 'DMSans-Bold',
   },
 });
 

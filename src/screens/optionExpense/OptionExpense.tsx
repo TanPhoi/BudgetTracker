@@ -1,45 +1,22 @@
-import {
-  AddPriceIcon,
-  AddToCartIcon,
-  BusFrontIcon,
-  CloseIcon,
-  Monitor,
-  TshirtIcon,
-  UserGroupsIcon,
-} from '@/assets/svg';
-import IncomeExpenseButton from '@/commons/buttons/IncomeExpenseButton';
+import {CloseIcon} from '@/assets/svg';
 import {colors} from '@/themes/colors';
-import React, {JSX, useEffect, useState} from 'react';
+import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import FormField from '@/components/optionExpense/FormField';
+import FormField from '@/commons/inputs/FormField';
 import {ExpenseType} from '@/models/expenseType.model';
 import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
-import SelectableDropdown from '@/commons/dropdown/SelectableDropdown';
-import {DropdownOptionType} from '@/models/dropdownOptionType.model';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {spacing} from '@/themes/spacing';
-
-const optionCategory = [
-  {key: 1, option: 'Apparels', icon: <TshirtIcon />, color: '#A858EE'},
-  {key: 2, option: 'Electronics', icon: <Monitor />, color: '#E3B53C'},
-  {key: 3, option: 'Groceries', icon: <AddToCartIcon />, color: '#61D8D8'},
-  {key: 4, option: 'Investments', icon: <AddPriceIcon />, color: '#FFE870'},
-  {key: 5, option: 'Life', icon: <UserGroupsIcon />, color: '#8EFDAD'},
-  {key: 6, option: 'Transportation', icon: <BusFrontIcon />, color: '#E33C3C'},
-];
-
-const optionCurrency = [
-  {key: 1, option: 'INR (₹)'},
-  {key: 2, option: 'USD ($)'},
-  {key: 3, option: 'VND (₫)'},
-];
-
-const optionPaymentMethod = [
-  {key: 1, option: 'Physical Cash'},
-  {key: 2, option: 'Card Payment'},
-];
+import Tab from '@/commons/tabs/tab';
+import {REGEX} from '@/constants/regexs.constant';
+import SelectOption from '@/commons/selectOptions/SelectOption';
+import {DropdownOptionType} from '@/commons/dropdown/dropdownOptionType';
+import {CATEGORIES} from '@/constants/categories.contant';
+import {CURRENCIES} from '@/constants/currencies.contant';
+import {PAYMENT_METHOD} from '@/constants/payment_method.contant';
+import {t} from 'i18next';
 
 type OptionExpenseProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'OptionExpense'>;
@@ -48,15 +25,15 @@ type OptionExpenseProps = {
 const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
   const [expense, setExpense] = useState<ExpenseType>({
     currentTime: '',
-    category: 'Groceries',
-    amount: '',
-    currency: 'INR (₹)',
-    paymentMethod: 'Physical Cash',
+    category: 'groceries',
+    amount: 0,
+    currency: 'usd',
+    paymentMethod: 'physical_cash',
     desc: '',
+    type: 'income',
   });
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
-    null,
-  );
+
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     setExpense(prevExpense => ({
@@ -65,49 +42,47 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
     }));
   }, []);
 
-  const handleChangeCategory = (item: DropdownOptionType): void => {
-    setExpense(prevExpense => ({
-      ...prevExpense,
-      category: item.option,
-    }));
-  };
+  const handleChangeCategory = useCallback(
+    (item: DropdownOptionType, isOpen: boolean): void => {
+      setExpense(prevExpense => ({
+        ...prevExpense,
+        category: item.option,
+      }));
+      setOpenDropdown(isOpen ? 'category' : null);
+    },
+    [],
+  );
 
-  const handleChangeCurrency = (item: DropdownOptionType): void => {
-    let currencySymbol = '₹';
+  const handleChangeCurrency = useCallback(
+    (item: DropdownOptionType, isOpen: boolean): void => {
+      setExpense(prevExpense => ({
+        ...prevExpense,
+        currency: item.option,
+      }));
+      setOpenDropdown(isOpen ? 'currency' : null);
+    },
+    [],
+  );
 
-    if (item.option.includes('USD')) {
-      currencySymbol = '$';
-    } else if (item.option.includes('VND')) {
-      currencySymbol = '₫';
-    }
-
-    setExpense(prevExpense => ({
-      ...prevExpense,
-      currency: item.option,
-      amount: `${currencySymbol}${prevExpense.amount.replace(/[^0-9]/g, '')}`,
-    }));
-  };
-
-  const handleChangePaymentMethod = (item: DropdownOptionType): void => {
-    setExpense(prevExpense => ({
-      ...prevExpense,
-      paymentMethod: item.option,
-    }));
-  };
+  const handleChangePaymentMethod = useCallback(
+    (item: DropdownOptionType, isOpen: boolean): void => {
+      setExpense(prevExpense => ({
+        ...prevExpense,
+        paymentMethod: item.option,
+      }));
+      setOpenDropdown(isOpen ? 'paymentMethod' : null);
+    },
+    [],
+  );
 
   const handleChangeAmount = (newAmount: string): void => {
-    const numericValue = newAmount.replace(/[^0-9]/g, '');
-    let currencySymbol = '₹';
+    const cleanedValue = newAmount.replace(REGEX.ONLY_NUMBERS_AND_DOTS, '');
 
-    if (expense.currency.includes('USD')) {
-      currencySymbol = '$';
-    } else if (expense.currency.includes('VND')) {
-      currencySymbol = '₫';
-    }
+    const numericValue = parseFloat(cleanedValue);
 
     setExpense(prevExpense => ({
       ...prevExpense,
-      amount: `${currencySymbol}${numericValue}`,
+      amount: isNaN(numericValue) ? 0 : numericValue,
     }));
   };
 
@@ -118,14 +93,21 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
     }));
   };
 
-  const handleToggleDropdown = (index: number): void => {
-    setOpenDropdownIndex(prevIndex => (prevIndex === index ? null : index));
-  };
-
   const handleBack = (): void => {
     navigation.navigate('AddExpense', {
       expense,
     });
+  };
+
+  const handleTransactionTypeChange = (value: string) => {
+    setExpense(prev => ({
+      ...prev,
+      type: value,
+    }));
+  };
+
+  const handleToggleDropdown = (dropdownType: string) => {
+    setOpenDropdown(openDropdown === dropdownType ? null : dropdownType);
   };
 
   return (
@@ -138,51 +120,57 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
       <TouchableOpacity style={styles.iconBack} onPress={handleBack}>
         <CloseIcon width={16} height={16} />
       </TouchableOpacity>
-      <IncomeExpenseButton />
+      <Tab onPress={handleTransactionTypeChange} />
       <ScrollView contentContainerStyle={{paddingBottom: 60}}>
         <View style={{rowGap: 16, marginTop: 30}}>
           <FormField
-            label={'TRANSACTION'}
+            label={t('transaction_print')}
             value={expense.currentTime}
-            editable={false}
+            isEditable={false}
           />
 
-          <SelectableDropdown
-            data={optionCategory}
+          <SelectOption
+            data={CATEGORIES}
             onSelect={handleChangeCategory}
-            label={'CATEGORY'}
+            label={t('category_print')}
+            isOpen={openDropdown === 'category'}
             defaultSelected={expense.category}
-            isOpen={openDropdownIndex === 0}
-            onToggle={() => handleToggleDropdown(0)}
+            onToggle={() => handleToggleDropdown('category')}
           />
 
           <FormField
-            label={'AMOUNT'}
-            value={expense.amount}
+            label={t('amount')}
+            value={`${
+              expense.currency === 'usd'
+                ? '$'
+                : expense.currency === 'vnd'
+                ? '₫'
+                : '₹'
+            }${expense.amount}`}
             onChange={handleChangeAmount}
             keyboardType="numeric"
           />
 
-          <SelectableDropdown
-            data={optionCurrency}
+          <SelectOption
+            data={CURRENCIES}
             onSelect={handleChangeCurrency}
-            label={'CURRENCY'}
+            isOpen={openDropdown === 'currency'}
+            label={t('currency_print')}
             defaultSelected={expense.currency}
-            isOpen={openDropdownIndex === 1}
-            onToggle={() => handleToggleDropdown(1)}
+            onToggle={() => handleToggleDropdown('currency')}
           />
 
-          <SelectableDropdown
-            data={optionPaymentMethod}
+          <SelectOption
+            data={PAYMENT_METHOD}
             onSelect={handleChangePaymentMethod}
-            label={'PAYMENT METHOD'}
+            isOpen={openDropdown === 'paymentMethod'}
+            label={t('payment_method_print')}
             defaultSelected={expense.paymentMethod}
-            isOpen={openDropdownIndex === 2}
-            onToggle={() => handleToggleDropdown(2)}
+            onToggle={() => handleToggleDropdown('paymentMethod')}
           />
 
           <FormField
-            label={'DESCRIPTION'}
+            label={t('desc_print')}
             value={expense.desc}
             onChange={handleChangeDesc}
           />

@@ -1,17 +1,18 @@
+import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
-import React, {JSX} from 'react';
+import React, {FunctionComponent, JSX, SVGProps} from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 type DrawerMenuProps = {
-  icon: JSX.Element;
+  icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   title: string;
 };
 
-const DrawerMenu = ({icon, title}: DrawerMenuProps): JSX.Element => {
+const DrawerMenu = ({icon: Icon, title}: DrawerMenuProps): JSX.Element => {
   return (
     <TouchableOpacity style={styles.menuContainer}>
-      {icon}
+      <Icon width={18} height={18} color={colors.goldenRod} />
       <Text style={typography.Heading10}>{title}</Text>
     </TouchableOpacity>
   );

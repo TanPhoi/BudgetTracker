@@ -1,4 +1,4 @@
-import React, {JSX} from 'react';
+import React, {cloneElement, JSX} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Cards, Home, Insight, UserProfile} from '@/screens';
 import {CardIcon, HomeIcon, InsightIcon, UserIcon} from '@/assets/svg';
@@ -22,7 +22,7 @@ const TabNavigation = (): JSX.Element => {
           const IconComponent = icons[route.name];
           return (
             <View style={styles.iconContainer}>
-              {React.cloneElement(IconComponent, {
+              {cloneElement(IconComponent, {
                 color: focused ? colors.goldenRod : colors.pureWhite,
               })}
               {focused && <View style={styles.focusedIconShadow}></View>}

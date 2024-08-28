@@ -1,53 +1,55 @@
 import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import {ArrowDownIcon} from '@/assets/svg';
 import {colors} from '@/themes/colors';
 import {typography} from '@/themes/typography';
 import {ScrollView} from 'react-native-gesture-handler';
-import {DropdownOptionType} from '@/models/dropdownOptionType.model';
 import {spacing} from '@/themes/spacing';
+import {DropdownOptionType} from '@/commons/dropdown/dropdownOptionType';
+import {t} from 'i18next';
 
-type SelectableDropdownProps = {
+type SelectOptionProps = {
   label: string;
   data: DropdownOptionType[];
-  onSelect: (item: DropdownOptionType) => void;
+  onSelect: (item: DropdownOptionType, isOpen: boolean) => void;
   defaultSelected: string;
   isOpen: boolean;
   onToggle: () => void;
 };
 
-const SelectableDropdown = ({
+const SelectOption = ({
   label,
   data,
   onSelect,
   defaultSelected,
   isOpen,
   onToggle,
-}: SelectableDropdownProps) => {
+}: SelectOptionProps) => {
   const [selected, setSelected] = useState<DropdownOptionType | null>(null);
 
-  const handleSelect = (item: DropdownOptionType) => {
+  const handleSelect = (item: DropdownOptionType): void => {
     setSelected(item);
-    onSelect(item);
-    onToggle();
+    onSelect(item, false);
   };
 
   const renderItem = ({item}: {item: DropdownOptionType}) => (
     <TouchableOpacity onPress={() => handleSelect(item)} style={styles.item}>
       {item.icon && (
         <View style={[styles.iconContainer, {backgroundColor: item.color}]}>
-          {item.icon}
+          <item.icon />
         </View>
       )}
-      <Text style={typography.Heading11}>{item.option}</Text>
+      <Text style={typography.Heading11}>{t(`categories.${item.option}`)}</Text>
     </TouchableOpacity>
   );
 
-  const displayedOption = selected ? selected.option : defaultSelected;
+  const displayedOption = selected
+    ? t(`categories.${selected.option}`)
+    : t(`categories.${defaultSelected}`);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onToggle} style={styles.dropdown}>
+      <TouchableOpacity style={styles.dropdown} onPress={onToggle}>
         <Text style={[typography.Heading3, styles.label]}>{label}</Text>
         <View style={styles.dropdownControl}>
           <Text style={typography.Heading10}>{displayedOption}</Text>
@@ -67,15 +69,17 @@ const SelectableDropdown = ({
                     styles.iconContainer,
                     {backgroundColor: selected.color},
                   ]}>
-                  {selected.icon}
+                  <selected.icon />
                 </View>
               )}
-              <Text style={typography.Heading11}>{selected.option}</Text>
+              <Text style={typography.Heading11}>
+                {t(`categories.${selected.option}`)}
+              </Text>
             </TouchableOpacity>
           )}
 
           <Text style={[typography.Heading10, styles.categoryText]}>
-            ALL CATEGORIES
+            {t('all_categories')}
           </Text>
           <ScrollView>
             <FlatList
@@ -161,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectableDropdown;
+export default memo(SelectOption);

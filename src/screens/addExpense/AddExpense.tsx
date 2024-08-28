@@ -1,5 +1,4 @@
 import {ArrowDownIcon, CloseIcon} from '@/assets/svg';
-import IncomeExpenseButton from '@/commons/buttons/IncomeExpenseButton';
 import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
@@ -19,6 +18,10 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
 import {RouteProp} from '@react-navigation/native';
+import Tab from '@/commons/tabs/tab';
+import {EMPTY_AMOUNT} from '@/constants/message.constant';
+import {REGEX} from '@/constants/regexs.constant';
+import {t} from 'i18next';
 
 type AddExpenseProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'AddExpense'>;
@@ -27,14 +30,14 @@ type AddExpenseProps = {
 
 const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
   const initialExpense = route.params?.expense;
-
   const [expense, setExpense] = useState<ExpenseType>({
     currentTime: '',
-    category: 'Groceries',
-    amount: '',
-    currency: 'INR (₹)',
-    paymentMethod: 'Physical Cash',
+    category: 'groceries',
+    amount: 0,
+    currency: t('currencyCode'),
+    paymentMethod: 'physical_cash',
     desc: '',
+    type: 'income',
   });
 
   useEffect(() => {
@@ -53,10 +56,13 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
   }, [route.params?.expense]);
 
   const handleSetAmount = (value: string): void => {
-    const cleanedValue = value.replace(/[^0-9.]/g, '');
+    const cleanedValue = value.replace(REGEX.ONLY_NUMBERS_AND_DOTS, '');
+
+    const numericValue = parseFloat(cleanedValue);
+
     setExpense(prevExpense => ({
       ...prevExpense,
-      amount: `₹${cleanedValue}`,
+      amount: isNaN(numericValue) ? 0 : numericValue,
     }));
   };
 
@@ -69,7 +75,7 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
 
   const handleInsertTemplate = (): void => {
     if (!expense.amount) {
-      return Alert.alert('Amount cannot be empty!');
+      return Alert.alert(EMPTY_AMOUNT);
     }
 
     const newExpense: ExpenseType = {
@@ -79,6 +85,7 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
       currency: expense.currency,
       paymentMethod: expense.paymentMethod,
       desc: expense.desc,
+      type: expense.type,
     };
 
     setExpenseService(newExpense);
@@ -91,6 +98,13 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
 
   const handleBlack = (): void => {
     navigation.goBack();
+  };
+
+  const handleTransactionTypeChange = (value: string): void => {
+    setExpense(prev => ({
+      ...prev,
+      type: value,
+    }));
   };
 
   return (
@@ -106,14 +120,14 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
         </TouchableOpacity>
         <View style={styles.headerRight}>
           <Text style={[styles.txtPaymentMethod, typography.Heading3]}>
-            Payment Method
+            {t('payment_method')}
           </Text>
           <ArrowDownIcon width={7} color={colors.goldenRod} />
         </View>
       </View>
 
       <View style={styles.boxCategory}>
-        <IncomeExpenseButton />
+        <Tab onPress={handleTransactionTypeChange} />
 
         <TouchableOpacity onPress={handleOptionCategory}>
           <LinearGradient
@@ -123,7 +137,7 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
             end={{x: 1, y: 1}}
             style={styles.gradientCategory}>
             <View style={styles.boxGradient}>
-              <Text style={typography.Heading12}>Category</Text>
+              <Text style={typography.Heading12}>{t('category')}</Text>
               <ArrowDownIcon width={8} height={4} color={colors.pureWhite} />
             </View>
           </LinearGradient>
@@ -131,12 +145,19 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
       </View>
 
       <View style={styles.boxAmount}>
-        <Text style={[typography.Heading13]}>-</Text>
+        <Text style={[typography.Heading13]}>
+          {expense.type === 'income' ? '+' : '-'}
+        </Text>
         <TextInput
           onChangeText={handleSetAmount}
-          value={expense.amount}
+          value={`${
+            expense.currency === 'usd'
+              ? '$'
+              : expense.currency === 'vnd'
+              ? '₫'
+              : '₹'
+          }${expense.amount}`}
           style={[typography.Heading13]}
-          placeholder="₹ 0"
           placeholderTextColor={colors.pureWhite}
           keyboardType="numeric"
         />
@@ -145,7 +166,7 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
       <TextInput
         onChangeText={handleChangeDesc}
         value={expense.desc}
-        placeholder="Add Description"
+        placeholder={t('add_description')}
         placeholderTextColor={colors.transparentWhite}
         style={[styles.edtAddDescription, typography.Heading3]}
         selectionColor={colors.goldenRod}
@@ -159,7 +180,7 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
           end={{x: 1, y: 1}}>
           <View style={styles.btnInsert}>
             <Text style={[typography.Heading3, styles.txtInsert]}>
-              Insert Template
+              {t('insert_template')}
             </Text>
           </View>
         </LinearGradient>

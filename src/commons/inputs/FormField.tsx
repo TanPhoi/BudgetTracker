@@ -13,7 +13,7 @@ import {spacing} from '@/themes/spacing';
 type FormFieldProps = {
   label: string;
   value: string;
-  editable?: boolean;
+  isEditable?: boolean;
   onChange?: (value: string) => void;
   keyboardType?: KeyboardTypeOptions;
 };
@@ -21,7 +21,7 @@ type FormFieldProps = {
 const FormField = ({
   label,
   value,
-  editable,
+  isEditable,
   onChange,
   keyboardType,
 }: FormFieldProps): JSX.Element => {
@@ -33,7 +33,7 @@ const FormField = ({
         placeholderTextColor={colors.pureWhite}
         value={value}
         onChangeText={onChange}
-        editable={editable}
+        editable={isEditable}
         keyboardType={keyboardType}
       />
       <View style={styles.divider}></View>

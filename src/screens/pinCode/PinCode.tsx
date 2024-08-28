@@ -17,12 +17,14 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {triggerShake} from '@/animations/shakeAnimation';
 import {getPin, setPin} from '@/services/authentication';
 import {typography} from '@/themes/typography';
+import {useTranslation} from 'react-i18next';
 
 type PinCodeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'PinCode'>;
 };
 
 const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
+  const {t} = useTranslation();
   const [pin, setPinState] = useState<string>('');
   const [storedPin, setStoredPin] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
@@ -76,7 +78,7 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <ImageBackground source={img_enter_pin} style={styles.imgEnterPin}>
-        <Text style={[styles.title, typography.Heading]}>Enter Pin</Text>
+        <Text style={[styles.title, typography.Heading]}>{t('enter_pin')}</Text>
         <Animated.View
           style={[
             styles.pinDisplay,

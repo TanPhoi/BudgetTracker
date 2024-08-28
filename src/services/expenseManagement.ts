@@ -1,3 +1,7 @@
+import {
+  FETCH_TRANSACTION_ERROR,
+  SET_TRANSACTION_ERROR,
+} from '@/constants/message.constant';
 import {ExpenseType} from '@/models/expenseType.model';
 import database from '@react-native-firebase/database';
 
@@ -7,9 +11,8 @@ export const setExpenseService = async (data: ExpenseType): Promise<void> => {
   try {
     const newRef = reference.push();
     await newRef.set(data);
-    console.log('Expense data has been added successfully');
   } catch (error) {
-    console.error('Failed to add expense data:', error);
+    console.error(SET_TRANSACTION_ERROR, error);
     throw error;
   }
 };
@@ -21,7 +24,7 @@ export const getExpenseService = async <T>(): Promise<T | null> => {
     const expensesArray = data ? Object.values(data) : [];
     return expensesArray ? (expensesArray as T) : null;
   } catch (error) {
-    console.error('Failed to get expense data:', error);
+    console.error(FETCH_TRANSACTION_ERROR, error);
     return null;
   }
 };

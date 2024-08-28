@@ -4,7 +4,7 @@ import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import Svg, {Circle, Defs, LinearGradient, Stop} from 'react-native-svg';
 
-type CustomPieChartProps = {
+type PieChartProps = {
   size: number;
   strokeWidth: number;
   progress: number;
@@ -12,7 +12,7 @@ type CustomPieChartProps = {
   stopColor: string;
 };
 
-const CustomPieChart: React.FC<CustomPieChartProps> = ({
+const PieChart: React.FC<PieChartProps> = ({
   size,
   strokeWidth,
   progress,
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomPieChart;
+export default PieChart;

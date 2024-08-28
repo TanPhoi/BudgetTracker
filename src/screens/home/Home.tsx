@@ -10,25 +10,10 @@ import {spacing} from '@/themes/spacing';
 import {getExpenseService} from '@/services/expenseManagement';
 import {ExpenseType} from '@/models/expenseType.model';
 import {AddIcon, MenuIcon} from '@/assets/svg';
-import CustomPieChart from '@/components/home/PieChart';
-
-const pieChartData = [
-  {
-    categories: ['Investments', 'Electronics'],
-    startColor: colors.royalPurple,
-    stopColor: colors.lavenderMist,
-  },
-  {
-    categories: ['Groceries', 'Life'],
-    startColor: colors.blueLagoon,
-    stopColor: colors.aquaBlue,
-  },
-  {
-    categories: ['Apparels', 'Transportation'],
-    startColor: colors.goldenRod,
-    stopColor: colors.crimsonRed,
-  },
-];
+import PieChart from '@/commons/charts/PieChart';
+import {Option} from '@/commons/charts/Options';
+import {t} from 'i18next';
+import {formatDateTime} from '@/utils/formatDateTime';
 
 type HomeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'TabNavigation'>;
@@ -36,21 +21,33 @@ type HomeProps = {
 
 const Home = ({navigation}: HomeProps): JSX.Element => {
   const [expenses, setExpenses] = useState<ExpenseType[] | null>(null);
-  const [currentAmount, setCurrentAmount] = useState<string>('1,05,284');
+  const [currentAmount, setCurrentAmount] = useState<number>(0);
 
   useFocusEffect(
     useCallback(() => {
       const fetchExpenses = () => {
         getExpenseService<ExpenseType[]>().then(data => {
-          setExpenses(data || []);
+          if (data) {
+            setExpenses(data);
+            const incomeExpenses = data.filter(
+              expense => expense.type === 'income',
+            );
+            const totalIncomeAmount = incomeExpenses.reduce(
+              (total, expense) => {
+                return total + parseAmount(expense.amount);
+              },
+              0,
+            );
+            setCurrentAmount(totalIncomeAmount ?? 0);
+          }
         });
       };
       fetchExpenses();
     }, []),
   );
 
-  const parseAmount = (amount: string): number => {
-    return parseFloat(amount.replace(/[^\d.-]/g, ''));
+  const parseAmount = (amount: number): number => {
+    return amount;
   };
 
   const calculateTotalCategoryExpenses = (
@@ -58,7 +55,10 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
     categories: string[],
   ): number => {
     return expenses
-      .filter(expense => categories.includes(expense.category))
+      .filter(
+        expense =>
+          expense.type === 'expense' && categories.includes(expense.category),
+      )
       .reduce((total, expense) => {
         return total + parseAmount(expense.amount);
       }, 0);
@@ -93,6 +93,7 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
 
   const RenderItem = (item: ExpenseType) => {
     const [startColor, endColor] = getCategoryColors(item.category);
+    const formattedTime = formatDateTime(item.currentTime);
     return (
       <View style={styles.boxContainer}>
         <LinearGradient
@@ -105,11 +106,16 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
           <View style={styles.boxLeft}>
             <View style={styles.box}></View>
             <View>
-              <Text style={typography.Heading6}>{item.category}</Text>
-              <Text style={typography.Heading7}>{item.currentTime}</Text>
+              <Text style={typography.Heading6}>
+                {t(`categories.${item.category}`)}
+              </Text>
+              <Text style={typography.Heading7}>{formattedTime}</Text>
             </View>
           </View>
-          <Text style={styles.txtAmountItem}>-{item.amount}</Text>
+          <Text style={styles.txtAmountItem}>
+            {item.type === 'income' ? '+' : '-'}
+            {item.amount}
+          </Text>
         </View>
       </View>
     );
@@ -127,27 +133,28 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
           <TouchableOpacity onPress={handleMenu}>
             <MenuIcon />
           </TouchableOpacity>
-          <Text style={typography.Heading1}>Welcome</Text>
+          <Text style={typography.Heading1}>{t('welcome')}</Text>
           <View style={styles.placeholder}></View>
         </View>
 
         <Text style={[styles.txtAvailableBalance, typography.Heading3]}>
-          Available Balance
+          {t('available_balance')}
         </Text>
         <Text style={[styles.txtAmount, typography.Heading4]}>
-          ₹{currentAmount}
+          {t('currency')}
+          {currentAmount}
         </Text>
 
         <View style={styles.boxCenter}>
           <View style={styles.progressContainer}>
-            {pieChartData.map((data, index) => {
+            {Option.map((data, index) => {
               const totalCategoryExpenses = calculateTotalCategoryExpenses(
                 expenses || [],
                 data.categories,
               );
               return (
                 <View key={index} style={styles.progressWrapper}>
-                  <CustomPieChart
+                  <PieChart
                     size={90}
                     strokeWidth={15}
                     progress={calculatePercentage(
@@ -162,7 +169,7 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
             })}
           </View>
 
-          <Text style={styles.txtMyTransactions}>My transactions</Text>
+          <Text style={styles.txtMyTransactions}>{t('my_transactions')}</Text>
 
           <FlatList
             data={expenses}

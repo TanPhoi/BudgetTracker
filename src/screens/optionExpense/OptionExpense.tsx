@@ -3,27 +3,26 @@ import {colors} from '@/themes/colors';
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import FormField from '@/commons/inputs/FormField';
-import {ExpenseType} from '@/models/expenseType.model';
 import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {spacing} from '@/themes/spacing';
 import Tab from '@/commons/tabs/tab';
-import {REGEX} from '@/constants/regexs.constant';
-import SelectOption from '@/commons/selectOptions/SelectOption';
+import SelectOption from '@/commons/selects/SelectOption';
 import {DropdownOptionType} from '@/commons/dropdown/dropdownOptionType';
 import {CATEGORIES} from '@/constants/categories.contant';
 import {CURRENCIES} from '@/constants/currencies.contant';
-import {PAYMENT_METHOD} from '@/constants/payment_method.contant';
 import {t} from 'i18next';
+import InputMain from '@/commons/inputs/InputMain';
+import {PAYMENT_METHOD} from '@/constants/paymentMethod.contant';
+import {Transaction} from '@/models/transaction.model';
 
 type OptionExpenseProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'OptionExpense'>;
 };
 
 const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
-  const [expense, setExpense] = useState<ExpenseType>({
+  const [transaction, setTransaction] = useState<Transaction>({
     currentTime: '',
     category: 'groceries',
     amount: 0,
@@ -36,16 +35,16 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   useEffect(() => {
-    setExpense(prevExpense => ({
-      ...prevExpense,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
       currentTime: formatCurrentDateTime(),
     }));
   }, []);
 
   const handleChangeCategory = useCallback(
     (item: DropdownOptionType, isOpen: boolean): void => {
-      setExpense(prevExpense => ({
-        ...prevExpense,
+      setTransaction(prevTransaction => ({
+        ...prevTransaction,
         category: item.option,
       }));
       setOpenDropdown(isOpen ? 'category' : null);
@@ -55,8 +54,8 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
 
   const handleChangeCurrency = useCallback(
     (item: DropdownOptionType, isOpen: boolean): void => {
-      setExpense(prevExpense => ({
-        ...prevExpense,
+      setTransaction(prevTransaction => ({
+        ...prevTransaction,
         currency: item.option,
       }));
       setOpenDropdown(isOpen ? 'currency' : null);
@@ -66,8 +65,8 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
 
   const handleChangePaymentMethod = useCallback(
     (item: DropdownOptionType, isOpen: boolean): void => {
-      setExpense(prevExpense => ({
-        ...prevExpense,
+      setTransaction(prevTransaction => ({
+        ...prevTransaction,
         paymentMethod: item.option,
       }));
       setOpenDropdown(isOpen ? 'paymentMethod' : null);
@@ -76,38 +75,45 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
   );
 
   const handleChangeAmount = (newAmount: string): void => {
-    const cleanedValue = newAmount.replace(REGEX.ONLY_NUMBERS_AND_DOTS, '');
-
-    const numericValue = parseFloat(cleanedValue);
-
-    setExpense(prevExpense => ({
-      ...prevExpense,
-      amount: isNaN(numericValue) ? 0 : numericValue,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
+      amount: Number(newAmount),
     }));
   };
 
   const handleChangeDesc = (newDesc: string): void => {
-    setExpense(prevExpense => ({
-      ...prevExpense,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
       desc: newDesc,
     }));
   };
 
   const handleBack = (): void => {
-    navigation.navigate('AddExpense', {
-      expense,
+    navigation.navigate('AddTransaction', {
+      transaction,
     });
   };
 
   const handleTransactionTypeChange = (value: string) => {
-    setExpense(prev => ({
-      ...prev,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
       type: value,
     }));
   };
 
   const handleToggleDropdown = (dropdownType: string) => {
     setOpenDropdown(openDropdown === dropdownType ? null : dropdownType);
+  };
+
+  const getCurrency = (currency: string): string => {
+    switch (currency) {
+      case 'usd':
+        return '$';
+      case 'vnd':
+        return '₫';
+      default:
+        return '₹';
+    }
   };
 
   return (
@@ -123,10 +129,10 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
       <Tab onPress={handleTransactionTypeChange} />
       <ScrollView contentContainerStyle={{paddingBottom: 60}}>
         <View style={{rowGap: 16, marginTop: 30}}>
-          <FormField
+          <InputMain
             label={t('transaction_print')}
-            value={expense.currentTime}
-            isEditable={false}
+            value={transaction.currentTime}
+            editable={false}
           />
 
           <SelectOption
@@ -134,21 +140,16 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
             onSelect={handleChangeCategory}
             label={t('category_print')}
             isOpen={openDropdown === 'category'}
-            defaultSelected={expense.category}
+            defaultSelected={transaction.category}
             onToggle={() => handleToggleDropdown('category')}
           />
 
-          <FormField
+          <InputMain
             label={t('amount')}
-            value={`${
-              expense.currency === 'usd'
-                ? '$'
-                : expense.currency === 'vnd'
-                ? '₫'
-                : '₹'
-            }${expense.amount}`}
+            value={transaction.amount.toString()}
             onChange={handleChangeAmount}
             keyboardType="numeric"
+            prefix={getCurrency(transaction.currency)}
           />
 
           <SelectOption
@@ -156,7 +157,7 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
             onSelect={handleChangeCurrency}
             isOpen={openDropdown === 'currency'}
             label={t('currency_print')}
-            defaultSelected={expense.currency}
+            defaultSelected={transaction.currency}
             onToggle={() => handleToggleDropdown('currency')}
           />
 
@@ -165,13 +166,13 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
             onSelect={handleChangePaymentMethod}
             isOpen={openDropdown === 'paymentMethod'}
             label={t('payment_method_print')}
-            defaultSelected={expense.paymentMethod}
+            defaultSelected={transaction.paymentMethod}
             onToggle={() => handleToggleDropdown('paymentMethod')}
           />
 
-          <FormField
+          <InputMain
             label={t('desc_print')}
-            value={expense.desc}
+            value={transaction.desc}
             onChange={handleChangeDesc}
           />
         </View>

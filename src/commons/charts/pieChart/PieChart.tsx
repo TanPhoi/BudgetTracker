@@ -1,6 +1,6 @@
 import {colors} from '@/themes/colors';
 import {typography} from '@/themes/typography';
-import React from 'react';
+import React, {FC} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import Svg, {Circle, Defs, LinearGradient, Stop} from 'react-native-svg';
 
@@ -12,7 +12,7 @@ type PieChartProps = {
   stopColor: string;
 };
 
-const PieChart: React.FC<PieChartProps> = ({
+const PieChart: FC<PieChartProps> = ({
   size,
   strokeWidth,
   progress,

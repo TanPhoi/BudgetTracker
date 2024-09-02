@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
-import React, {memo, useState} from 'react';
+import React, {memo, useMemo, useState} from 'react';
 import {ArrowDownIcon} from '@/assets/svg';
 import {colors} from '@/themes/colors';
 import {typography} from '@/themes/typography';
@@ -43,9 +43,11 @@ const SelectOption = ({
     </TouchableOpacity>
   );
 
-  const displayedOption = selected
-    ? t(`categories.${selected.option}`)
-    : t(`categories.${defaultSelected}`);
+  const displayedOption = useMemo(() => {
+    return selected
+      ? t(`categories.${selected.option}`)
+      : t(`categories.${defaultSelected}`);
+  }, [selected, defaultSelected]);
 
   return (
     <View style={styles.container}>

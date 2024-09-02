@@ -4,7 +4,7 @@ import Insight from '@/screens/insight/Insight';
 import PinCode from '@/screens/pinCode/PinCode';
 import Splash from '@/screens/splash/Splash';
 import UserProfile from '@/screens/userProfile/UserProfile';
-import AddExpense from '@/screens/addExpense/AddExpense';
+import AddTransaction from '@/screens/addTransaction/AddTransaction';
 import OptionExpense from '@/screens/optionExpense/OptionExpense';
 
 export {
@@ -14,6 +14,6 @@ export {
   PinCode,
   Splash,
   UserProfile,
-  AddExpense,
+  AddTransaction,
   OptionExpense,
 };

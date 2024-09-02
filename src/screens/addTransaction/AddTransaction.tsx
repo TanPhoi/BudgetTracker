@@ -12,25 +12,27 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {setExpenseService} from '@/services/expenseManagement';
-import {ExpenseType} from '@/models/expenseType.model';
+import {setTransactionService} from '@/services/transactionManagement';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
 import {RouteProp} from '@react-navigation/native';
 import Tab from '@/commons/tabs/tab';
 import {EMPTY_AMOUNT} from '@/constants/message.constant';
-import {REGEX} from '@/constants/regexs.constant';
 import {t} from 'i18next';
+import {Transaction} from '@/models/transaction.model';
 
-type AddExpenseProps = {
-  navigation: NativeStackNavigationProp<RootStackParamsList, 'AddExpense'>;
-  route: RouteProp<RootStackParamsList, 'AddExpense'>;
+type AddTransactionProps = {
+  navigation: NativeStackNavigationProp<RootStackParamsList, 'AddTransaction'>;
+  route: RouteProp<RootStackParamsList, 'AddTransaction'>;
 };
 
-const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
-  const initialExpense = route.params?.expense;
-  const [expense, setExpense] = useState<ExpenseType>({
+const AddTransaction = ({
+  navigation,
+  route,
+}: AddTransactionProps): JSX.Element => {
+  const initialTransaction = route.params?.transaction;
+  const [transaction, setTransaction] = useState<Transaction>({
     currentTime: '',
     category: 'groceries',
     amount: 0,
@@ -41,54 +43,50 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
   });
 
   useEffect(() => {
-    if (initialExpense) {
-      setExpense(initialExpense);
+    if (initialTransaction) {
+      setTransaction(initialTransaction);
     }
-  }, [initialExpense]);
+  }, [initialTransaction]);
 
   useEffect(() => {
-    if (!route.params?.expense) {
-      setExpense(prevExpense => ({
-        ...prevExpense,
+    if (!initialTransaction) {
+      setTransaction(prevTransaction => ({
+        ...prevTransaction,
         currentTime: formatCurrentDateTime(),
       }));
     }
-  }, [route.params?.expense]);
+  }, [initialTransaction]);
 
   const handleSetAmount = (value: string): void => {
-    const cleanedValue = value.replace(REGEX.ONLY_NUMBERS_AND_DOTS, '');
-
-    const numericValue = parseFloat(cleanedValue);
-
-    setExpense(prevExpense => ({
-      ...prevExpense,
-      amount: isNaN(numericValue) ? 0 : numericValue,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
+      amount: Number(value),
     }));
   };
 
   const handleChangeDesc = (newDesc: string): void => {
-    setExpense(prevExpense => ({
-      ...prevExpense,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
       desc: newDesc,
     }));
   };
 
   const handleInsertTemplate = (): void => {
-    if (!expense.amount) {
+    if (!transaction.amount) {
       return Alert.alert(EMPTY_AMOUNT);
     }
 
-    const newExpense: ExpenseType = {
-      currentTime: expense.currentTime,
-      category: expense.category,
-      amount: expense.amount,
-      currency: expense.currency,
-      paymentMethod: expense.paymentMethod,
-      desc: expense.desc,
-      type: expense.type,
+    const newExpense: Transaction = {
+      currentTime: transaction.currentTime,
+      category: transaction.category,
+      amount: transaction.amount,
+      currency: transaction.currency,
+      paymentMethod: transaction.paymentMethod,
+      desc: transaction.desc,
+      type: transaction.type,
     };
 
-    setExpenseService(newExpense);
+    setTransactionService(newExpense);
     navigation.goBack();
   };
 
@@ -101,10 +99,21 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
   };
 
   const handleTransactionTypeChange = (value: string): void => {
-    setExpense(prev => ({
-      ...prev,
+    setTransaction(prevTransaction => ({
+      ...prevTransaction,
       type: value,
     }));
+  };
+
+  const getCurrency = (currency: string): string => {
+    switch (currency) {
+      case 'usd':
+        return '$';
+      case 'vnd':
+        return '₫';
+      default:
+        return '₹';
+    }
   };
 
   return (
@@ -146,26 +155,25 @@ const AddExpense = ({navigation, route}: AddExpenseProps): JSX.Element => {
 
       <View style={styles.boxAmount}>
         <Text style={[typography.Heading13]}>
-          {expense.type === 'income' ? '+' : '-'}
+          {transaction.type === 'income' ? '+' : '-'}
         </Text>
-        <TextInput
-          onChangeText={handleSetAmount}
-          value={`${
-            expense.currency === 'usd'
-              ? '$'
-              : expense.currency === 'vnd'
-              ? '₫'
-              : '₹'
-          }${expense.amount}`}
-          style={[typography.Heading13]}
-          placeholderTextColor={colors.pureWhite}
-          keyboardType="numeric"
-        />
+        <View style={styles.boxInput}>
+          <Text style={[typography.Heading13]}>
+            {getCurrency(transaction.currency)}
+          </Text>
+          <TextInput
+            onChangeText={handleSetAmount}
+            value={transaction.amount.toString()}
+            style={[typography.Heading13]}
+            placeholderTextColor={colors.pureWhite}
+            keyboardType="numeric"
+          />
+        </View>
       </View>
 
       <TextInput
         onChangeText={handleChangeDesc}
-        value={expense.desc}
+        value={transaction.desc}
         placeholder={t('add_description')}
         placeholderTextColor={colors.transparentWhite}
         style={[styles.edtAddDescription, typography.Heading3]}
@@ -275,6 +283,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  boxInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
-export default AddExpense;
+export default AddTransaction;

@@ -7,76 +7,64 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {typography} from '@/themes/typography';
 import {spacing} from '@/themes/spacing';
-import {getExpenseService} from '@/services/expenseManagement';
-import {ExpenseType} from '@/models/expenseType.model';
+import {getTransactionsService} from '@/services/transactionManagement';
 import {AddIcon, MenuIcon} from '@/assets/svg';
-import PieChart from '@/commons/charts/PieChart';
-import {Option} from '@/commons/charts/Options';
 import {t} from 'i18next';
 import {formatDateTime} from '@/utils/formatDateTime';
+import PieChart from '@/commons/charts/pieChart/PieChart';
+import {PieChartColors} from '@/commons/charts/pieChart/PieChartColors ';
+import {Transaction} from '@/models/transaction.model';
+import {calculateTotalIncomeAmount} from '@/helpers/transaction.helper';
 
 type HomeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'TabNavigation'>;
 };
 
 const Home = ({navigation}: HomeProps): JSX.Element => {
-  const [expenses, setExpenses] = useState<ExpenseType[] | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [currentAmount, setCurrentAmount] = useState<number>(0);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchExpenses = () => {
-        getExpenseService<ExpenseType[]>().then(data => {
-          if (data) {
-            setExpenses(data);
-            const incomeExpenses = data.filter(
-              expense => expense.type === 'income',
-            );
-            const totalIncomeAmount = incomeExpenses.reduce(
-              (total, expense) => {
-                return total + parseAmount(expense.amount);
-              },
-              0,
-            );
+      const fetchTransactions = () => {
+        getTransactionsService<Transaction[]>().then(transactions => {
+          if (transactions) {
+            setTransactions(transactions);
+            const totalIncomeAmount = calculateTotalIncomeAmount(transactions);
             setCurrentAmount(totalIncomeAmount ?? 0);
           }
         });
       };
-      fetchExpenses();
+      fetchTransactions();
     }, []),
   );
 
-  const parseAmount = (amount: number): number => {
-    return amount;
-  };
+  const calculateTotalCategoryExpenses = useCallback(
+    (expenses: Transaction[], categories: string[]): number => {
+      const filteredExpenses = expenses.filter(
+        transaction =>
+          transaction.type === 'expense' &&
+          categories.includes(transaction.category),
+      );
 
-  const calculateTotalCategoryExpenses = (
-    expenses: ExpenseType[],
-    categories: string[],
-  ): number => {
-    return expenses
-      .filter(
-        expense =>
-          expense.type === 'expense' && categories.includes(expense.category),
-      )
-      .reduce((total, expense) => {
-        return total + parseAmount(expense.amount);
+      return filteredExpenses.reduce((total, transaction) => {
+        return total + transaction.amount;
       }, 0);
-  };
+    },
+    [],
+  );
 
   const calculatePercentage = (amount: number, total: number): number => {
     return total > 0 ? Math.min((amount / total) * 100, 100) : 0;
   };
 
-  const totalAmount = parseAmount(currentAmount);
-
   const getCategoryColors = (category: string): string[] => {
     switch (category) {
-      case 'Investments':
-      case 'Electronics':
+      case 'investments':
+      case 'electronics':
         return [colors.royalPurple, colors.lavenderMist];
-      case 'Groceries':
-      case 'Life':
+      case 'groceries':
+      case 'life':
         return [colors.blueLagoon, colors.aquaBlue];
       default:
         return [colors.goldenRod, colors.crimsonRed];
@@ -88,10 +76,10 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
   };
 
   const handleAddExpense = (): void => {
-    navigation.navigate('AddExpense');
+    navigation.navigate('AddTransaction');
   };
 
-  const RenderItem = (item: ExpenseType) => {
+  const RenderItem = (item: Transaction) => {
     const [startColor, endColor] = getCategoryColors(item.category);
     const formattedTime = formatDateTime(item.currentTime);
     return (
@@ -147,11 +135,12 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
 
         <View style={styles.boxCenter}>
           <View style={styles.progressContainer}>
-            {Option.map((data, index) => {
+            {PieChartColors.map((data, index) => {
               const totalCategoryExpenses = calculateTotalCategoryExpenses(
-                expenses || [],
+                transactions || [],
                 data.categories,
               );
+
               return (
                 <View key={index} style={styles.progressWrapper}>
                   <PieChart
@@ -159,7 +148,7 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
                     strokeWidth={15}
                     progress={calculatePercentage(
                       totalCategoryExpenses,
-                      totalAmount,
+                      currentAmount,
                     )}
                     startColor={data.startColor}
                     stopColor={data.stopColor}
@@ -172,7 +161,7 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
           <Text style={styles.txtMyTransactions}>{t('my_transactions')}</Text>
 
           <FlatList
-            data={expenses}
+            data={transactions}
             renderItem={({item}) => <RenderItem {...item} />}
             contentContainerStyle={styles.flatContainer}
             showsVerticalScrollIndicator={false}

@@ -1,18 +1,18 @@
 import {colors} from '@/themes/colors';
 
-export const Option = [
+export const PieChartColors = [
   {
-    categories: ['Investments', 'Electronics'],
+    categories: ['investments', 'electronics'],
     startColor: colors.royalPurple,
     stopColor: colors.lavenderMist,
   },
   {
-    categories: ['Groceries', 'Life'],
+    categories: ['groceries', 'life'],
     startColor: colors.blueLagoon,
     stopColor: colors.aquaBlue,
   },
   {
-    categories: ['Apparels', 'Transportation'],
+    categories: ['apparels', 'transportation'],
     startColor: colors.goldenRod,
     stopColor: colors.crimsonRed,
   },

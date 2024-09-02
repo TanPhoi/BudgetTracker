@@ -1,4 +1,4 @@
-export type ExpenseType = {
+export type Transaction = {
   currentTime: string;
   category: string;
   amount: number;

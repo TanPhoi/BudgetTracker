@@ -7,7 +7,9 @@ import database from '@react-native-firebase/database';
 
 const reference = database().ref('user/expense');
 
-export const setExpenseService = async (data: ExpenseType): Promise<void> => {
+export const setTransactionService = async (
+  data: ExpenseType,
+): Promise<void> => {
   try {
     const newRef = reference.push();
     await newRef.set(data);
@@ -17,7 +19,7 @@ export const setExpenseService = async (data: ExpenseType): Promise<void> => {
   }
 };
 
-export const getExpenseService = async <T>(): Promise<T | null> => {
+export const getTransactionsService = async <T>(): Promise<T | null> => {
   try {
     const snapshot = await reference.once('value');
     const data = snapshot.val();

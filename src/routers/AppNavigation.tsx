@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {AddExpense, OptionExpense, PinCode, Splash} from '@/screens';
+import {AddTransaction, OptionExpense, PinCode, Splash} from '@/screens';
 import {colors} from '@/themes/colors';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigation from '@/routers/TabNavigation';
 import getStorageData from '@/utils/getStorageData';
 import setStorageData from '@/utils/setStorageData';
-import {ExpenseType} from '@/models/expenseType.model';
+import {Transaction} from '@/models/transaction.model';
 
 export type RootStackParamsList = {
   Splash: undefined;
   PinCode: undefined;
   TabNavigation: undefined;
-  AddExpense: {expense: ExpenseType} | undefined;
+  AddTransaction: {transaction: Transaction} | undefined;
   OptionExpense: undefined;
 };
 
@@ -51,7 +51,7 @@ const AppNavigation = (): JSX.Element => {
       {!isFirstLaunch && <Stack.Screen name="Splash" component={Splash} />}
       <Stack.Screen name="PinCode" component={PinCode} />
       <Stack.Screen name="TabNavigation" component={TabNavigation} />
-      <Stack.Screen name="AddExpense" component={AddExpense} />
+      <Stack.Screen name="AddTransaction" component={AddTransaction} />
       <Stack.Screen name="OptionExpense" component={OptionExpense} />
     </Stack.Navigator>
   );

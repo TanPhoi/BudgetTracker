@@ -10,32 +10,38 @@ import {
 } from 'react-native';
 import {spacing} from '@/themes/spacing';
 
-type FormFieldProps = {
+type InputMainProps = {
   label: string;
   value: string;
-  isEditable?: boolean;
+  editable?: boolean;
+  prefix?: string;
   onChange?: (value: string) => void;
   keyboardType?: KeyboardTypeOptions;
 };
 
-const FormField = ({
+const InputMain = ({
   label,
   value,
-  isEditable,
+  editable,
   onChange,
+  prefix,
   keyboardType,
-}: FormFieldProps): JSX.Element => {
+}: InputMainProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <Text style={[typography.Heading3, styles.title]}>{label}</Text>
-      <TextInput
-        style={[typography.Heading11, styles.input]}
-        placeholderTextColor={colors.pureWhite}
-        value={value}
-        onChangeText={onChange}
-        editable={isEditable}
-        keyboardType={keyboardType}
-      />
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={typography.Heading11}>{prefix}</Text>
+        <TextInput
+          style={[typography.Heading11, styles.input]}
+          placeholderTextColor={colors.pureWhite}
+          value={value}
+          onChangeText={onChange}
+          editable={editable}
+          keyboardType={keyboardType}
+        />
+      </View>
+
       <View style={styles.divider}></View>
     </View>
   );
@@ -56,7 +62,10 @@ const styles = StyleSheet.create({
     color: colors.pureWhite,
   },
   input: {
-    height: 40,
+    width: '96%',
+    height: 30,
+    paddingVertical: 2,
+    paddingLeft: -5,
   },
   divider: {
     height: 1,
@@ -64,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FormField;
+export default InputMain;

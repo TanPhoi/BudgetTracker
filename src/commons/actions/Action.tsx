@@ -1,4 +1,5 @@
 import {colors} from '@/themes/colors';
+import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
 import React, {ElementType, JSX} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -22,14 +23,12 @@ const Action = ({icon: Icon, title, onPress}: ActionProps): JSX.Element => {
 
 const styles = StyleSheet.create({
   boxAction: {
-    width: 90,
-    height: 115,
     justifyContent: 'center',
     alignItems: 'center',
     rowGap: 10,
   },
   actionIcon: {
-    padding: 20,
+    padding: spacing.md,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',

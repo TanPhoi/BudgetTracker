@@ -19,7 +19,7 @@ import {typography} from '@/themes/typography';
 import {formatCardNumber} from '@/utils/formatCardNumber';
 import {formatExpirationDate} from '@/utils/formatExpirationDate';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {t} from 'i18next';
+import {useTranslation} from 'react-i18next';
 import React, {JSX, useEffect, useState} from 'react';
 import {
   Alert,
@@ -40,6 +40,7 @@ type CardsProps = {
 const {width, height} = Dimensions.get('window');
 
 const Cards = ({navigation}: CardsProps): JSX.Element => {
+  const {t} = useTranslation();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [cards, setCards] = useState<Card[]>([]);
@@ -191,7 +192,7 @@ const Cards = ({navigation}: CardsProps): JSX.Element => {
           </Text>
           <View style={styles.divider}></View>
 
-          {cards.length > 1 ? (
+          {cards.length >= 1 ? (
             <View style={{height: height / 3}}>
               <Carousel
                 style={styles.carousel}
@@ -233,12 +234,9 @@ const Cards = ({navigation}: CardsProps): JSX.Element => {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              {cards.length === 1 && (
+              {cards.length === 0 && (
                 <LinearGradient
-                  colors={[
-                    cards[0].startColor || getRandomColor(),
-                    cards[0].stopColor || getRandomColor(),
-                  ]}
+                  colors={[colors.midnightBlack, colors.goldenRod]}
                   locations={[0.2, 0.9]}
                   start={{x: 0, y: 1}}
                   end={{x: 1, y: 1}}
@@ -251,16 +249,14 @@ const Cards = ({navigation}: CardsProps): JSX.Element => {
                     <WavePatternIcon />
                   </View>
                   <Text style={[typography.Heading14, styles.txtNumberCard]}>
-                    {cards[0].cardNumber}
+                    0000 0000 0000 0000
                   </Text>
                   <View style={styles.boxDate}>
                     <Text style={typography.Heading15}>{t('valid_thru')}</Text>
-                    <Text style={typography.Heading16}>
-                      {cards[0].expirationDate}
-                    </Text>
+                    <Text style={typography.Heading16}>00/00</Text>
                   </View>
                   <Text style={[typography.Heading16, styles.txtName]}>
-                    {cards[0].name}
+                    Nguyen Van A
                   </Text>
                 </LinearGradient>
               )}

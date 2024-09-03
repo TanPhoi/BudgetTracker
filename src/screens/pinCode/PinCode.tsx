@@ -18,6 +18,9 @@ import {triggerShake} from '@/animations/shakeAnimation';
 import {getPin, setPin} from '@/services/authentication';
 import {typography} from '@/themes/typography';
 import {useTranslation} from 'react-i18next';
+import moment from 'moment';
+import i18n from '@/languages/i18n';
+import getStorageData from '@/utils/getStorageData';
 
 type PinCodeProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'PinCode'>;
@@ -39,6 +42,18 @@ const PinCode = ({navigation}: PinCodeProps): JSX.Element => {
       submitOnPinComplete();
     }
   }, [pin]);
+
+  useEffect(() => {
+    const loadLanguage = (): void => {
+      getStorageData<string>('language').then(language => {
+        if (language) {
+          i18n.changeLanguage(language);
+          moment.locale(language);
+        }
+      });
+    };
+    loadLanguage();
+  }, [i18n]);
 
   const handlePress = (value: string): void => {
     if (pin.length < 4) {

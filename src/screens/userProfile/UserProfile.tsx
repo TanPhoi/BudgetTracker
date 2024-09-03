@@ -19,6 +19,7 @@ import {
   SettingIcon,
 } from '@/assets/svg';
 import {ScrollView} from 'react-native-gesture-handler';
+import setStorageData from '@/utils/setStorageData';
 
 type UserProfileProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'TabNavigation'>;
@@ -29,6 +30,7 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const switchLanguage = (lang: string): void => {
+    setStorageData('language', lang);
     i18n.changeLanguage(lang);
     moment.locale(lang);
     setModalVisible(false);
@@ -165,22 +167,22 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
               <Text style={styles.modalTitle}>{t('select_language')}</Text>
               <Pressable
                 style={styles.modalButton}
-                onPress={(): void => switchLanguage('en')}>
+                onPress={() => switchLanguage('en')}>
                 <Text style={styles.modalButtonText}>English</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
-                onPress={(): void => switchLanguage('vi')}>
+                onPress={() => switchLanguage('vi')}>
                 <Text style={styles.modalButtonText}>Vietnamese</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
-                onPress={(): void => switchLanguage('hi')}>
+                onPress={() => switchLanguage('hi')}>
                 <Text style={styles.modalButtonText}>Hindi</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
-                onPress={(): void => setModalVisible(false)}>
+                onPress={() => setModalVisible(false)}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </Pressable>
             </View>

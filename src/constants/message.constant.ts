@@ -8,3 +8,5 @@ export const SET_PIN_ERROR = 'Error setting PIN:';
 export const FETCH_TRANSACTION_ERROR = 'Failed to get expense data:';
 export const SET_TRANSACTION_ERROR = 'Failed to add expense data:';
 export const EMPTY_AMOUNT = t('amount_empty');
+export const ERROR_MISSING_FIELD = 'Please enter the missing field';
+export const CHECK_CARD_NUMBER = 'Card number already exists.';

@@ -29,6 +29,7 @@ const TabNavigation = (): JSX.Element => {
             </View>
           );
         },
+        tabBarHideOnKeyboard: true,
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {

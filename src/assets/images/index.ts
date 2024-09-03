@@ -5,6 +5,9 @@ import img_logo4 from '@/assets/images/img_logo4.png';
 import img_logo5 from '@/assets/images/img_logo5.png';
 import img_onboarding from '@/assets/images/img_onboarding.png';
 import img_enter_pin from '@/assets/images/img_enter_pin.png';
+import img_chip from '@/assets/images/img_chip.png';
+import img_user from '@/assets/images/img_user.png';
+import img_qr_code from '@/assets/images/img_qr_code.png';
 
 export {
   img_logo1,
@@ -14,4 +17,7 @@ export {
   img_logo5,
   img_onboarding,
   img_enter_pin,
+  img_chip,
+  img_user,
+  img_qr_code,
 };

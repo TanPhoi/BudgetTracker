@@ -46,6 +46,13 @@ import AddPriceIcon from '@/assets/svg/AddPriceIcon.svg';
 import UserGroupsIcon from '@/assets/svg/UserGroupsIcon.svg';
 import BusFrontIcon from '@/assets/svg/BusFrontIcon.svg';
 import Monitor from '@/assets/svg/Monitor.svg';
+import BackIcon from '@/assets/svg/BackIcon.svg';
+import DotsVertical from '@/assets/svg/DotsVertical.svg';
+import MasterCardIcon from '@/assets/svg/MasterCardIcon.svg';
+import WavePatternIcon from '@/assets/svg/WavePatternIcon.svg';
+import PhysicalCashIcon from '@/assets/svg/PhysicalCashIcon.svg';
+import CreditCard from '@/assets/svg/CreditCard.svg';
+import DebitCardIcon from '@/assets/svg/DebitCardIcon.svg';
 
 export {
   AddIcon,
@@ -96,4 +103,11 @@ export {
   UserGroupsIcon,
   BusFrontIcon,
   Monitor,
+  BackIcon,
+  DotsVertical,
+  MasterCardIcon,
+  WavePatternIcon,
+  PhysicalCashIcon,
+  CreditCard,
+  DebitCardIcon,
 };

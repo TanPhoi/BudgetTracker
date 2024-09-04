@@ -2,22 +2,22 @@ import {
   FETCH_TRANSACTION_ERROR,
   SET_TRANSACTION_ERROR,
 } from '@/constants/message.constant';
-import {CardType} from '@/screens/cards/Cards';
+import {Card} from '@/models/card.model';
 import database from '@react-native-firebase/database';
 
 const reference = database().ref('user/cards');
 
-export const setCardService = async (data: CardType): Promise<void> => {
+export const addCardService = async (card: Card): Promise<void> => {
   try {
     const newRef = reference.push();
-    await newRef.set(data);
+    await newRef.set(card);
   } catch (error) {
     console.error(SET_TRANSACTION_ERROR, error);
     throw error;
   }
 };
 
-export const getCardService = async <T>(): Promise<T | null> => {
+export const getCardsService = async <T>(): Promise<T | null> => {
   try {
     const snapshot = await reference.once('value');
     const data = snapshot.val();

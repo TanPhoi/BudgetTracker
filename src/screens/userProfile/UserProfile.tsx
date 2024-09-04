@@ -10,16 +10,15 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {img_qr_code, img_user} from '@/assets/images';
 import {typography} from '@/themes/typography';
-import Action from '@/commons/actions/Action';
-import {
-  BankSyncIcon,
-  CreditCard,
-  DebitCardIcon,
-  PhysicalCashIcon,
-  SettingIcon,
-} from '@/assets/svg';
+import Action from '@/components/userProfile/Action';
+import {SettingIcon} from '@/assets/svg';
 import {ScrollView} from 'react-native-gesture-handler';
 import setStorageData from '@/utils/setStorageData';
+import {
+  actionCards,
+  actionPaymentMethods,
+  languages,
+} from '@/constants/userProfile.contant';
 
 type UserProfileProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'TabNavigation'>;
@@ -36,17 +35,32 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
     setModalVisible(false);
   };
 
-  //TODO: implement later
-  const handleBankBalance = (): void => {};
+  // Hàm xử lý chung cho tất cả các hành động thanh toán
+  const handlePaymentAction = (type: string): void => {
+    switch (type) {
+      case 'bank_balance':
+        // Xử lý ngân hàng
+        break;
+      case 'physical_cash':
+        // Xử lý tiền mặt
+        break;
+      default:
+        break;
+    }
+  };
 
-  //TODO: implement later
-  const handlePhysicalCash = (): void => {};
-
-  //TODO: implement later
-  const handleCreditCard = (): void => {};
-
-  //TODO: implement later
-  const handleDebitCard = (): void => {};
+  const handleCardAction = (type: string): void => {
+    switch (type) {
+      case 'credit_card':
+        // Xử lý thẻ tín dụng
+        break;
+      case 'debit_card':
+        // Xử lý thẻ ghi nợ
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleChangeLanguage = (): void => {
     setModalVisible(true);
@@ -55,36 +69,6 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
   const handleBack = (): void => {
     navigation.goBack();
   };
-
-  const actionPaymentMethods = [
-    {
-      id: 1,
-      icon: BankSyncIcon,
-      title: t('bank_balance'),
-      onPress: handleBankBalance,
-    },
-    {
-      id: 2,
-      icon: PhysicalCashIcon,
-      title: t('physical_cash'),
-      onPress: handlePhysicalCash,
-    },
-  ];
-
-  const actionCards = [
-    {
-      id: 1,
-      icon: CreditCard,
-      title: t('credit_card'),
-      onPress: handleCreditCard,
-    },
-    {
-      id: 2,
-      icon: DebitCardIcon,
-      title: t('debit_card'),
-      onPress: handleDebitCard,
-    },
-  ];
 
   return (
     <LinearGradient
@@ -119,7 +103,7 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
             <Text style={typography.Heading16}>{t('payment_methods')}</Text>
 
             <View style={styles.boxBottom}>
-              {actionPaymentMethods.map(item => (
+              {actionPaymentMethods(handlePaymentAction).map(item => (
                 <Action
                   key={item.id}
                   icon={item.icon}
@@ -134,7 +118,7 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
             <Text style={typography.Heading16}>{t('cards')}</Text>
 
             <View style={styles.boxBottom}>
-              {actionCards.map(item => (
+              {actionCards(handleCardAction).map(item => (
                 <Action
                   key={item.id}
                   icon={item.icon}
@@ -161,29 +145,22 @@ const UserProfile = ({navigation}: UserProfileProps): JSX.Element => {
           transparent={true}
           animationType="slide"
           visible={modalVisible}
-          onRequestClose={(): void => setModalVisible(false)}>
+          onRequestClose={() => setModalVisible(false)}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{t('select_language')}</Text>
-              <Pressable
-                style={styles.modalButton}
-                onPress={() => switchLanguage('en')}>
-                <Text style={styles.modalButtonText}>English</Text>
-              </Pressable>
-              <Pressable
-                style={styles.modalButton}
-                onPress={() => switchLanguage('vi')}>
-                <Text style={styles.modalButtonText}>Vietnamese</Text>
-              </Pressable>
-              <Pressable
-                style={styles.modalButton}
-                onPress={() => switchLanguage('hi')}>
-                <Text style={styles.modalButtonText}>Hindi</Text>
-              </Pressable>
+              {languages.map(lang => (
+                <Pressable
+                  key={lang.code}
+                  style={styles.modalButton}
+                  onPress={() => switchLanguage(lang.code)}>
+                  <Text style={styles.modalButtonText}>{lang.name}</Text>
+                </Pressable>
+              ))}
               <Pressable
                 style={styles.modalButton}
                 onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
+                <Text style={styles.modalButtonText}>{t('cancel')}</Text>
               </Pressable>
             </View>
           </View>

@@ -1,7 +1,8 @@
-export const formatCurrentDateTime = (): string => {
-  const now = new Date();
+import i18n from 'i18next';
 
-  const language = 'en';
+export const formatDateTimeVi = (): string => {
+  const now = new Date();
+  const language = i18n.language || 'en';
 
   const timeOptions: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
@@ -10,7 +11,7 @@ export const formatCurrentDateTime = (): string => {
   };
 
   const dateOptions: Intl.DateTimeFormatOptions = {
-    month: 'short',
+    month: language === 'vi' ? 'long' : 'short',
     day: '2-digit',
     year: 'numeric',
   };

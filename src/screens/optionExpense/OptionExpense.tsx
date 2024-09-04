@@ -3,7 +3,7 @@ import {colors} from '@/themes/colors';
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
+import {formatDateTimeVi} from '@/utils/formatDateTimeVi';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {spacing} from '@/themes/spacing';
@@ -16,6 +16,7 @@ import {t} from 'i18next';
 import InputMain from '@/commons/inputs/InputMain';
 import {PAYMENT_METHOD} from '@/constants/paymentMethod.contant';
 import {Transaction} from '@/models/transaction.model';
+import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
 
 type OptionExpenseProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'OptionExpense'>;
@@ -37,7 +38,7 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
   useEffect(() => {
     setTransaction(prevTransaction => ({
       ...prevTransaction,
-      currentTime: formatCurrentDateTime(),
+      currentTime: formatDateTimeVi(),
     }));
   }, []);
 
@@ -89,8 +90,13 @@ const OptionExpense = ({navigation}: OptionExpenseProps): JSX.Element => {
   };
 
   const handleBack = (): void => {
+    const updatedTransaction = {
+      ...transaction,
+      currentTime: formatCurrentDateTime(),
+    };
+
     navigation.navigate('AddTransaction', {
-      transaction,
+      transaction: updatedTransaction,
     });
   };
 

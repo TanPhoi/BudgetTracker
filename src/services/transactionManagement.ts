@@ -2,13 +2,13 @@ import {
   FETCH_TRANSACTION_ERROR,
   SET_TRANSACTION_ERROR,
 } from '@/constants/message.constant';
-import {ExpenseType} from '@/models/expenseType.model';
+import {Transaction} from '@/models/transaction.model';
 import database from '@react-native-firebase/database';
 
 const reference = database().ref('user/expense');
 
-export const setTransactionService = async (
-  data: ExpenseType,
+export const addTransactionService = async (
+  data: Transaction,
 ): Promise<void> => {
   try {
     const newRef = reference.push();

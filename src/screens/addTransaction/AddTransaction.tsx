@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {setTransactionService} from '@/services/transactionManagement';
+import {addTransactionService} from '@/services/transactionManagement';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {formatCurrentDateTime} from '@/utils/formatCurrentDateTime';
@@ -86,7 +86,7 @@ const AddTransaction = ({
       type: transaction.type,
     };
 
-    setTransactionService(newExpense);
+    addTransactionService(newExpense);
     navigation.goBack();
   };
 
@@ -109,10 +109,10 @@ const AddTransaction = ({
     switch (currency) {
       case 'usd':
         return '$';
-      case 'vnd':
-        return '₫';
-      default:
+      case 'inr':
         return '₹';
+      default:
+        return '₫';
     }
   };
 

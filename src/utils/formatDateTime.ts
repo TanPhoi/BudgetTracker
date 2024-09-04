@@ -6,7 +6,8 @@ export const formatDateTime = (dateTime: string): string => {
   const formattedDateTime = `${datePart} ${timePart}`;
 
   try {
-    const language = moment.locale() || 'en'; // Ngôn ngữ hiện tại của moment.js
+    const language = moment.locale() || 'vi';
+
     moment.locale(language);
 
     const date = moment(formattedDateTime, 'MMM DD, YYYY h:mm A');
@@ -16,9 +17,10 @@ export const formatDateTime = (dateTime: string): string => {
     }
 
     const time = date.format('h:mm A');
-    const dateFormatted = date.format(
-      language === 'vi' ? 'D MMMM YYYY' : 'MMM DD, YYYY',
-    );
+    const dateFormatted =
+      language === 'vi'
+        ? date.format('DD MMMM YYYY')
+        : date.format('MMM DD, YYYY');
 
     return `${time} | ${dateFormatted}`;
   } catch (error) {

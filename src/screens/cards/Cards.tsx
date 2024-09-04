@@ -11,8 +11,7 @@ import {calculateTotalIncomeAmount} from '@/helpers/transaction.helper';
 import {Card} from '@/models/card.model';
 import {Transaction} from '@/models/transaction.model';
 import {RootStackParamsList} from '@/routers/AppNavigation';
-import {getCardService, setCardService} from '@/services/cardManagement';
-import {getTransactionsService} from '@/services/transactionManagement';
+import {getCardsService, addCardService} from '@/services/cardManagement';
 import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
@@ -32,6 +31,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Carousel from 'react-native-reanimated-carousel';
+import {getTransactionsService} from '@/services/transactionManagement';
 
 type CardsProps = {
   navigation: NativeStackNavigationProp<RootStackParamsList, 'TabNavigation'>;
@@ -53,7 +53,7 @@ const Cards = ({navigation}: CardsProps): JSX.Element => {
 
   useEffect(() => {
     const fetchCards = (): void => {
-      getCardService<Card[]>().then(data => {
+      getCardsService<Card[]>().then(data => {
         const cardsWithColors = (data || []).map(card => ({
           ...card,
           startColor: getRandomColor(),
@@ -137,7 +137,7 @@ const Cards = ({navigation}: CardsProps): JSX.Element => {
       cvv: card.cvv,
     };
 
-    setCardService(newCard);
+    addCardService(newCard);
     setCards(prevCards => [...prevCards, newCard]);
   };
 

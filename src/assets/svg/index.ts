@@ -53,6 +53,7 @@ import WavePatternIcon from '@/assets/svg/WavePatternIcon.svg';
 import PhysicalCashIcon from '@/assets/svg/PhysicalCashIcon.svg';
 import CreditCard from '@/assets/svg/CreditCard.svg';
 import DebitCardIcon from '@/assets/svg/DebitCardIcon.svg';
+import MessagerIcon from '@/assets/svg/MessagerIcon.svg';
 
 export {
   AddIcon,
@@ -110,4 +111,5 @@ export {
   PhysicalCashIcon,
   CreditCard,
   DebitCardIcon,
+  MessagerIcon,
 };

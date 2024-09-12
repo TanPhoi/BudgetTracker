@@ -14,7 +14,7 @@ export const colors = {
   aquaBlue: '#00C2CB',
   royalPurple: '#6C40D9',
   lavenderMist: '#A858EE',
-  transparentWhite: '#FFFFFF80',
+  transparentWhite: '#FFFFFF10',
   indigoNight: '#382F4D',
   midnightBlue: '#211F46',
   white_transparent_10: 'rgba(255, 255, 255, 0.1)',

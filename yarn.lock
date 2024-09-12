@@ -5193,6 +5193,7 @@ __metadata:
     react-native: ^0.75.1
     react-native-element-dropdown: ^2.12.1
     react-native-gesture-handler: ^2.18.1
+    react-native-gifted-charts: ^1.4.32
     react-native-keyboard-aware-scroll-view: ^0.9.5
     react-native-linear-gradient: ^2.8.3
     react-native-localize: ^3.2.1
@@ -6423,7 +6424,19 @@ babel-plugin-module-resolver@latest:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
+"debug@npm:4":
+  version: 4.3.7
+  resolution: "debug@npm:4.3.7"
+  dependencies:
+    ms: ^2.1.3
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 822d74e209cd910ef0802d261b150314bbcf36c582ccdbb3e70f0894823c17e49a50d3e66d96b633524263975ca16b6a833f3e3b7e030c157169a5fabac63160
+  languageName: node
+  linkType: hard
+
+"debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
   version: 4.3.6
   resolution: "debug@npm:4.3.6"
   dependencies:
@@ -7633,6 +7646,16 @@ babel-plugin-module-resolver@latest:
     es-errors: ^1.3.0
     get-intrinsic: ^1.2.4
   checksum: e1cb53bc211f9dbe9691a4f97a46837a553c4e7caadd0488dc24ac694db8a390b93edd412b48dcdd0b4bbb4c595de1709effc75fc87c0839deedc6968f5bd973
+  languageName: node
+  linkType: hard
+
+"gifted-charts-core@npm:^0.1.33":
+  version: 0.1.33
+  resolution: "gifted-charts-core@npm:0.1.33"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 0adb1cda8321fab3f4b75572b7a4c222db727a1542ffebe27681ad2009326203646b32e8b1fae4dfef02ad37d7141458490a805f3c4ab3354a42b36aa70c18b0
   languageName: node
   linkType: hard
 
@@ -10075,7 +10098,7 @@ babel-plugin-module-resolver@latest:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.3":
+"ms@npm:2.1.3, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
@@ -10957,6 +10980,26 @@ babel-plugin-module-resolver@latest:
     react: "*"
     react-native: "*"
   checksum: 49b5b9a232fc60ddc38124a804410150070af5b20efbba1550831221560d71df704b7a7edfa2fb70d84fde32faf8675ad6118aea8b40f50c2a9d80eb7a08eb1c
+  languageName: node
+  linkType: hard
+
+"react-native-gifted-charts@npm:^1.4.32":
+  version: 1.4.32
+  resolution: "react-native-gifted-charts@npm:1.4.32"
+  dependencies:
+    gifted-charts-core: ^0.1.33
+  peerDependencies:
+    expo-linear-gradient: "*"
+    react: "*"
+    react-native: "*"
+    react-native-linear-gradient: "*"
+    react-native-svg: "*"
+  peerDependenciesMeta:
+    expo-linear-gradient:
+      optional: true
+    react-native-linear-gradient:
+      optional: true
+  checksum: e488a603b7fac0aa9373b3c0c006054ed39e027ad2593be81b82ed076c430cf3bec767054adbd6f886f7a499862a6844e7be338fa3694050c6a26be9a0f33c8b
   languageName: node
   linkType: hard
 

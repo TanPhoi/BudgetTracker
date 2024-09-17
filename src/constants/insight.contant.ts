@@ -33,3 +33,4 @@ export const monthsOfYear = [
 
 export type Insign = 'statistics' | 'savingsplan';
 export type InsignTransaction = 'income' | 'expense';
+export type TimeFrame = 'daily' | 'monthly' | 'yearly';

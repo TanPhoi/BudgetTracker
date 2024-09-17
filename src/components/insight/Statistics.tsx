@@ -5,6 +5,7 @@ import {
   monthsOfYear,
   tabTimeFrameOptions,
   tabTransaction,
+  TimeFrame,
 } from '@/constants/insight.contant';
 import {totalTransactionOverTime} from '@/helpers/transaction.helper';
 import {Transaction} from '@/models/transaction.model';
@@ -23,7 +24,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const Statistics = (): JSX.Element => {
   const {t} = useTranslation();
-  const [activeTimeFrame, setActiveTimeFrame] = useState<string>('daily');
+  const [activeTimeFrame, setActiveTimeFrame] = useState<TimeFrame>('daily');
   const [activeTab, setActiveTab] = useState<InsignTransaction>('income');
   const [totalExpense, setTotalExpense] = useState<number>(0);
   const [totalIncome, setTotalIncome] = useState<number>(0);
@@ -57,8 +58,8 @@ const Statistics = (): JSX.Element => {
 
   const getChartData = (
     data: Transaction[],
-    mode: string,
-    type: string,
+    mode: 'daily' | 'monthly' | 'yearly',
+    type: 'income' | 'expense',
   ): {value: number; title: string}[] => {
     if (!Array.isArray(data) || data.length === 0) {
       return [{value: 0, title: ''}];
@@ -182,7 +183,7 @@ const Statistics = (): JSX.Element => {
       <View style={styles.timeContainer}>
         {tabTimeFrameOptions.map(option => (
           <TouchableOpacity
-            onPress={(): void => setActiveTimeFrame(option.key)}
+            onPress={(): void => setActiveTimeFrame(option.key as TimeFrame)}
             key={option.key}
             style={styles.buttonWrapper}>
             {activeTimeFrame === option.key ? (

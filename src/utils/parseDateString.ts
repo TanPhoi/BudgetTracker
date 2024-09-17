@@ -1,3 +1,6 @@
+//input: 2:16 PM | Sep 16, 2024
+//output: 2024-09-15T19:16:00.000Z
+
 export const parseDateString = (dateString: string): Date => {
   const [timePart, datePart] = dateString.split(' | ');
   const [month, day, year] = datePart.split(' ');
@@ -30,5 +33,6 @@ export const parseDateString = (dateString: string): Date => {
   date.setMinutes(parseInt(minute, 10));
   date.setSeconds(0);
   date.setMilliseconds(0);
+
   return date;
 };

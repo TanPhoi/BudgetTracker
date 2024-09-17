@@ -2,7 +2,7 @@ import Header from '@/commons/headers/Header';
 import TabSecond from '@/commons/tabs/tabSecond';
 import SavingsPlan from '@/components/insight/SavingsPlan';
 import Statistics from '@/components/insight/Statistics';
-import {tabFinancial} from '@/constants/insight.contant';
+import {Insign, tabFinancial} from '@/constants/insight.contant';
 import {RootStackParamsList} from '@/routers/AppNavigation';
 import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
@@ -17,16 +17,15 @@ type InsightProps = {
 };
 
 const Insight = ({navigation}: InsightProps): JSX.Element => {
-  const [activeTab, setActiveTab] = useState<string>('statistics');
+  const [activeTab, setActiveTab] = useState<Insign>('statistics');
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'statistics':
-        return <Statistics />;
-      case 'savingsplan':
-        return <SavingsPlan />;
-      default:
-        return null;
+    if (activeTab === 'statistics') {
+      return <Statistics />;
+    } else if (activeTab === 'savingsplan') {
+      return <SavingsPlan />;
+    } else {
+      return null;
     }
   };
 

@@ -13,46 +13,25 @@ export const calculateTotalIncomeAmount = (
   }, 0);
 };
 
-export const totalExpenseOverTime = (
+export const totalTransactionOverTime = (
   transactions: Transaction[],
+  type: string,
   startDate: Date,
   endDate: Date,
 ) => {
-  const filteredExpenses = transactions.filter(transaction => {
+  const filteredTransaction = transactions.filter(transaction => {
     const transactionDate = parseDateString(transaction.currentTime);
     return (
-      transaction.type === 'expense' &&
+      transaction.type === type &&
       transactionDate >= startDate &&
       transactionDate <= endDate
     );
   });
 
-  const totalExpense = filteredExpenses.reduce(
+  const totalTransaction = filteredTransaction.reduce(
     (total, transaction) => total + transaction.amount,
     0,
   );
 
-  return {filteredExpenses, totalExpense};
-};
-
-export const totalIncomeOverTime = (
-  transactions: Transaction[],
-  startDate: Date,
-  endDate: Date,
-) => {
-  const filteredIncomes = transactions.filter(transaction => {
-    const transactionDate = parseDateString(transaction.currentTime);
-    return (
-      transaction.type === 'income' &&
-      transactionDate >= startDate &&
-      transactionDate <= endDate
-    );
-  });
-
-  const totalIncome = filteredIncomes.reduce(
-    (total, transaction) => total + transaction.amount,
-    0,
-  );
-
-  return {filteredIncomes, totalIncome};
+  return {filteredTransaction, totalTransaction};
 };

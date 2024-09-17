@@ -1,15 +1,20 @@
-import LineChartTransaction from '@/commons/charts/LineChartTransaction';
+import AreaLineChart from '@/commons/charts/AreaLineChart';
 import TabSecond from '@/commons/tabs/tabSecond';
-import {tabTimeFrameOptions, tabTransaction} from '@/constants/insight.contant';
 import {
-  totalExpenseOverTime,
-  totalIncomeOverTime,
-} from '@/helpers/transaction.helper';
+  InsignTransaction,
+  monthsOfYear,
+  tabTimeFrameOptions,
+  tabTransaction,
+} from '@/constants/insight.contant';
+import {totalTransactionOverTime} from '@/helpers/transaction.helper';
 import {Transaction} from '@/models/transaction.model';
 import {getTransactionsService} from '@/services/transactionManagement';
 import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
+import {getDateRange} from '@/utils/getDateRange';
+import {getDayOfWeek} from '@/utils/getDayOfWeek';
+import {getWeekRange} from '@/utils/getWeekRange';
 import {parseDateString} from '@/utils/parseDateString';
 import React, {JSX, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -19,7 +24,7 @@ import LinearGradient from 'react-native-linear-gradient';
 const Statistics = (): JSX.Element => {
   const {t} = useTranslation();
   const [activeTimeFrame, setActiveTimeFrame] = useState<string>('daily');
-  const [activeTab, setActiveTab] = useState<string>('income');
+  const [activeTab, setActiveTab] = useState<InsignTransaction>('income');
   const [totalExpense, setTotalExpense] = useState<number>(0);
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
@@ -30,20 +35,14 @@ const Statistics = (): JSX.Element => {
         if (transactions) {
           const {startDate, endDate} = getDateRange(activeTimeFrame);
 
-          const {totalExpense} = totalExpenseOverTime(
+          const {totalTransaction} = totalTransactionOverTime(
             transactions,
+            activeTab,
             startDate,
             endDate,
           );
-
-          const {totalIncome} = totalIncomeOverTime(
-            transactions,
-            startDate,
-            endDate,
-          );
-
-          setTotalIncome(totalIncome);
-          setTotalExpense(totalExpense);
+          setTotalIncome(totalTransaction);
+          setTotalExpense(totalTransaction);
           setTransactions(transactions);
         }
       });
@@ -51,85 +50,6 @@ const Statistics = (): JSX.Element => {
 
     getTransactions();
   }, [activeTimeFrame]);
-
-  const getDateRange = (
-    timeFrame: string,
-  ): {startDate: Date; endDate: Date} => {
-    const now = new Date();
-    let startDate: Date, endDate: Date;
-
-    switch (timeFrame) {
-      case 'daily':
-        const dailyStart = new Date(now);
-        startDate = new Date(dailyStart.setHours(0, 0, 0, 0));
-
-        endDate = new Date(dailyStart.setHours(23, 59, 59, 999));
-        break;
-      case 'monthly':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        endDate = new Date(
-          now.getFullYear(),
-          now.getMonth() + 1,
-          0,
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case 'yearly':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-        break;
-      default:
-        startDate = new Date(0);
-        endDate = new Date();
-    }
-
-    return {startDate, endDate};
-  };
-
-  const getDayOfWeek = (date: Date): string => {
-    const day = [
-      t('sun'),
-      t('mon'),
-      t('tue'),
-      t('wed'),
-      t('thu'),
-      t('fri'),
-      t('sat'),
-    ];
-    console.log(date.getDay());
-
-    return day[date.getDay()];
-  };
-
-  const getWeekRange = (): {startDate: Date; endDate: Date} => {
-    const now = new Date();
-
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-
-    const endOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 7));
-    startOfWeek.setHours(0, 0, 0, 0);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    return {startDate: startOfWeek, endDate: endOfWeek};
-  };
-
-  const monthsOfYear = [
-    t('jan'),
-    t('feb'),
-    t('mar'),
-    t('apr'),
-    t('may'),
-    t('jun'),
-    t('jul'),
-    t('aug'),
-    t('sep'),
-    t('oct'),
-    t('nov'),
-    t('dec'),
-  ];
 
   const getMonth = (date: Date): string => {
     return monthsOfYear[date.getMonth()];
@@ -144,135 +64,117 @@ const Statistics = (): JSX.Element => {
       return [{value: 0, title: ''}];
     }
 
-    data = data.filter(item => item.type === type);
+    const filteredData = data.filter(item => item.type === type);
     const totals: {[key: string]: number} = {};
     const now = new Date();
 
-    if (mode === 'daily') {
-      const {startDate, endDate} = getWeekRange();
-      data.forEach(item => {
-        const data = parseDateString(item.currentTime);
-        if (data >= startDate && data <= endDate) {
-          const dayOfWeek = getDayOfWeek(data);
+    const addToTotals = (key: string, amount: number) => {
+      totals[key] = (totals[key] || 0) + amount;
+    };
 
-          if (!totals[dayOfWeek]) {
-            totals[dayOfWeek] = 0;
+    const modes: {[key: string]: () => {value: number; title: string}[]} = {
+      daily: () => {
+        const {startDate, endDate} = getWeekRange();
+        filteredData.forEach(item => {
+          const date = parseDateString(item.currentTime);
+          if (date >= startDate && date <= endDate) {
+            const dayOfWeek = getDayOfWeek(date);
+            addToTotals(dayOfWeek, item.amount);
           }
+        });
 
-          totals[dayOfWeek] += item.amount;
+        const dayOfWeekLabels = [
+          '',
+          t('mon'),
+          t('tue'),
+          t('wed'),
+          t('thu'),
+          t('fri'),
+          t('sat'),
+          t('sun'),
+          '',
+        ];
+        return dayOfWeekLabels.map(day => ({
+          value: totals[day] || 0,
+          title: day,
+        }));
+      },
+      monthly: () => {
+        const monthsToDisplay: string[] = [];
+        for (let i = 6; i >= 0; i--) {
+          const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          monthsToDisplay.push(monthsOfYear[month.getMonth()]);
         }
-      });
+        monthsToDisplay.unshift('');
+        monthsToDisplay.push('');
 
-      const dayOfWeek = [
-        '',
-        t('mon'),
-        t('tue'),
-        t('wed'),
-        t('thu'),
-        t('fri'),
-        t('sat'),
-        t('sun'),
-        '',
-      ];
-
-      return dayOfWeek.map(day => ({
-        value: totals[day] || 0,
-        title: day,
-      }));
-    } else if (mode === 'monthly') {
-      const monthsToDisplay: string[] = [];
-
-      for (let i = 6; i >= 0; i--) {
-        const month = new Date(now.getFullYear(), now.getMonth() - i, 2);
-        monthsToDisplay.push(monthsOfYear[month.getMonth()]);
-      }
-
-      monthsToDisplay.unshift('');
-      monthsToDisplay.push('');
-
-      data.forEach(item => {
-        const date = parseDateString(item.currentTime);
-        const month = getMonth(date);
-
-        if (monthsToDisplay.includes(month)) {
-          if (!totals[month]) {
-            totals[month] = 0;
+        filteredData.forEach(item => {
+          const date = parseDateString(item.currentTime);
+          const month = getMonth(date);
+          if (monthsToDisplay.includes(month)) {
+            addToTotals(month, item.amount);
           }
-          totals[month] += item.amount;
+        });
+
+        return monthsToDisplay.map(month => ({
+          value: totals[month] || 0,
+          title: month,
+        }));
+      },
+      yearly: () => {
+        const yearsToDisplay: string[] = [];
+        for (let i = 6; i >= 0; i--) {
+          yearsToDisplay.push((now.getFullYear() - i).toString());
         }
-      });
+        yearsToDisplay.unshift('');
+        yearsToDisplay.push('');
 
-      return monthsToDisplay.map(month => ({
-        value: totals[month] || 0,
-        title: month,
-      }));
-    } else {
-      const yearsToDisplay: (number | string)[] = [];
-      for (let i = 6; i >= 0; i--) {
-        yearsToDisplay.push(now.getFullYear() - i);
-      }
-      yearsToDisplay.unshift('');
-      yearsToDisplay.push('');
-
-      data.forEach(item => {
-        const date = parseDateString(item.currentTime);
-        const year = date.getFullYear();
-
-        if (yearsToDisplay.includes(year)) {
-          if (!totals[year]) {
-            totals[year] = 0;
+        filteredData.forEach(item => {
+          const date = parseDateString(item.currentTime);
+          const year = date.getFullYear().toString();
+          if (yearsToDisplay.includes(year)) {
+            addToTotals(year, item.amount);
           }
-          totals[year] += item.amount;
-        }
-      });
-      return yearsToDisplay.map(year => ({
-        value: totals[year] || 0,
-        title: year.toString(),
-      }));
-    }
-    return [{value: 0, title: ''}];
+        });
+
+        return yearsToDisplay.map(year => ({
+          value: totals[year] || 0,
+          title: year,
+        }));
+      },
+    };
+
+    return modes[mode] ? modes[mode]() : [{value: 0, title: ''}];
+  };
+
+  const handleTabChange = (key: InsignTransaction) => {
+    setActiveTab(key);
   };
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'income':
-        const chartData = getChartData(
-          transactions || [],
-          activeTimeFrame,
-          'income',
-        );
+    const isIncome = activeTab === 'income';
+    const transactionType = isIncome ? 'income' : 'expense';
+    const maxValue = isIncome ? totalIncome : totalExpense;
 
-        let xAxisLabels: string[] = [];
-        xAxisLabels = chartData.map(item => item.title);
-
-        return (
-          <LineChartTransaction
-            data={chartData}
-            xAxisLabels={xAxisLabels}
-            typeTransaction={'income'}
-            maxValue={totalIncome}
-          />
-        );
-      case 'expense':
-        const chartDataExpense = getChartData(
-          transactions || [],
-          activeTimeFrame,
-          'expense',
-        );
-
-        let xAxisLabelsExpense: string[] = [];
-        xAxisLabelsExpense = chartDataExpense.map(item => item.title);
-        return (
-          <LineChartTransaction
-            data={chartDataExpense}
-            xAxisLabels={xAxisLabelsExpense}
-            typeTransaction={'expense'}
-            maxValue={0}
-          />
-        );
-      default:
-        return null;
+    if (activeTab !== 'income' && activeTab !== 'expense') {
+      return null;
     }
+
+    const chartData = getChartData(
+      transactions || [],
+      activeTimeFrame,
+      transactionType,
+    );
+    const xAxisLabels = chartData.map(item => item.title);
+
+    return (
+      <AreaLineChart
+        data={chartData}
+        xAxisLabels={xAxisLabels}
+        typeTransaction={transactionType}
+        maxValue={maxValue}
+      />
+    );
   };
 
   return (
@@ -311,7 +213,7 @@ const Statistics = (): JSX.Element => {
       <TabSecond
         tabs={tabTransaction}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
       />
       <View style={styles.content}>{renderContent()}</View>
     </View>

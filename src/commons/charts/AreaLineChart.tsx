@@ -5,19 +5,19 @@ import {useTranslation} from 'react-i18next';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {LineChart} from 'react-native-gifted-charts';
 
-type LineChartTransactionProps = {
+type AreaLineChartProps = {
   data: {value: number; title: string}[];
   xAxisLabels: string[];
   typeTransaction: string;
   maxValue: number;
 };
 
-const LineChartTransaction = ({
+const AreaLineChart = ({
   data,
   xAxisLabels,
   typeTransaction,
   maxValue,
-}: LineChartTransactionProps): JSX.Element => {
+}: AreaLineChartProps): JSX.Element => {
   const {t} = useTranslation();
   const {width} = Dimensions.get('window');
   const [focusedLabelIndex, setFocusedLabelIndex] = useState<number | null>(
@@ -141,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(LineChartTransaction);
+export default memo(AreaLineChart);

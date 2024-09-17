@@ -5,17 +5,17 @@ import {t} from 'i18next';
 import React, {JSX} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-type TabSecondProps = {
-  tabs: {key: string; label: string}[];
-  activeTab: string;
-  onTabChange: (key: string) => void;
+type TabSecondProps<T> = {
+  tabs: {key: T; label: string}[];
+  activeTab: T;
+  onTabChange: (key: T) => void;
 };
 
-const TabSecond = ({
+const TabSecond = <T extends string>({
   tabs,
   activeTab,
   onTabChange,
-}: TabSecondProps): JSX.Element => {
+}: TabSecondProps<T>): JSX.Element => {
   return (
     <View style={styles.tabs}>
       {tabs.map(tab => (

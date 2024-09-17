@@ -6,6 +6,7 @@ export const parseDateString = (dateString: string): Date => {
   const [month, day, year] = datePart.split(' ');
   const [hour, minutePart] = timePart.split(':');
   const [minute, period] = minutePart.split(' ');
+
   const monthNames = [
     'Jan',
     'Feb',
@@ -22,17 +23,28 @@ export const parseDateString = (dateString: string): Date => {
   ];
   const monthIndex = monthNames.indexOf(month);
   let hour24 = parseInt(hour, 10);
+
   if (period === 'PM' && hour24 < 12) hour24 += 12;
   if (period === 'AM' && hour24 === 12) hour24 = 0;
 
-  const date = new Date();
-  date.setFullYear(parseInt(year, 10));
-  date.setMonth(monthIndex);
-  date.setDate(parseInt(day, 10));
-  date.setHours(hour24);
-  date.setMinutes(parseInt(minute, 10));
-  date.setSeconds(0);
-  date.setMilliseconds(0);
+  // Tạo đối tượng Date ở múi giờ địa phương
+  const localDate = new Date();
+  localDate.setFullYear(parseInt(year, 10));
+  localDate.setMonth(monthIndex);
+  localDate.setDate(parseInt(day, 10));
+  localDate.setHours(hour24, parseInt(minute, 10), 0, 0);
 
-  return date;
+  // Chuyển đổi thời gian sang UTC
+  const utcDate = new Date(
+    Date.UTC(
+      localDate.getFullYear(),
+      localDate.getMonth(),
+      localDate.getDate(),
+      localDate.getHours(),
+      localDate.getMinutes(),
+      localDate.getSeconds(),
+      localDate.getMilliseconds(),
+    ),
+  );
+  return utcDate;
 };

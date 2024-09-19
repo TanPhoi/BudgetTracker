@@ -35,11 +35,10 @@ const SavingsPlan = (): JSX.Element => {
   const [finalTotalIncome, setFinalTotalIncome] = useState<number>(0);
   const [totalExpense, setTotalExpense] = useState<number>(0);
   const [financialFixeds, setFinancialFixeds] = useState<FinancialFixed[]>([]);
-  const [currentMonthPercent, setCurrentMonthPercent] = useState<number>(0);
   const [currentMonthName, setCurrentMonthName] = useState<string>('');
   const [currentFixedIncome, setCurrentFixedIncome] = useState<number>(0);
   const [currentFixedCosts, setCurrentFixedCosts] = useState<number>(0);
-  const [numberPercent, setNumberPercent] = useState<number | null>(null);
+  const [numberPercent, setNumberPercent] = useState<number>(0);
   const [idFinancialFixeds, setIdFinancialFixeds] = useState<string | null>(
     null,
   );
@@ -86,16 +85,21 @@ const SavingsPlan = (): JSX.Element => {
               return itemDate >= start && itemDate <= end;
             });
 
-            setCurrentMonthPercent(filteredFinancialFixeds[0].percent);
-            setCurrentFixedIncome(filteredFinancialFixeds[0].fixedIncome);
-            setCurrentFixedCosts(filteredFinancialFixeds[0].fixedCosts);
-            setNumberPercent(filteredFinancialFixeds[0].percent);
-            setIdFinancialFixeds(filteredFinancialFixeds[0].key || null);
-
-            const itemDate = new Date(filteredFinancialFixeds[0].time);
-            const month = itemDate.getMonth() + 1;
-            if (getSelectCurrentDateTime('month') === month) {
-              setShowBox(true);
+            if (filteredFinancialFixeds.length >= 1) {
+              setCurrentFixedIncome(filteredFinancialFixeds[0].fixedIncome);
+              setCurrentFixedCosts(filteredFinancialFixeds[0].fixedCosts);
+              setNumberPercent(filteredFinancialFixeds[0].percent);
+              setIdFinancialFixeds(filteredFinancialFixeds[0].key || null);
+              const itemDate = new Date(filteredFinancialFixeds[0].time);
+              const month = itemDate.getMonth() + 1;
+              if (getSelectCurrentDateTime('month') === month) {
+                setShowBox(true);
+              }
+            } else {
+              setCurrentFixedIncome(0);
+              setCurrentFixedCosts(0);
+              setNumberPercent(0);
+              setIdFinancialFixeds(null);
             }
 
             setCurrentMonthName(monthsOfYear[currentDate.getMonth()]);
@@ -139,7 +143,6 @@ const SavingsPlan = (): JSX.Element => {
 
     addFinancialFixedService(newFinancialFixed).then(newId => {
       setFinancialFixeds(prev => [...prev, {...newFinancialFixed, key: newId}]);
-      setCurrentMonthPercent(numberPercent);
       setCurrentFixedIncome(fixedIncome);
       setCurrentFixedCosts(fixedCosts);
       setIdFinancialFixeds(newId);
@@ -237,7 +240,7 @@ const SavingsPlan = (): JSX.Element => {
               : item,
           ),
         );
-        setCurrentMonthPercent(prev =>
+        setNumberPercent(prev =>
           prev !== numberPercent ? numberPercent : prev,
         );
       });
@@ -293,12 +296,12 @@ const SavingsPlan = (): JSX.Element => {
                   handleDelete={handleDelete}
                   setShowBoxDelete={setShowBoxDelete}
                   currentMonthName={currentMonthName}
-                  currentMonthPercent={currentMonthPercent}
+                  currentMonthPercent={numberPercent}
                 />
               ) : (
                 <BoxChartFinance
                   currentMonthName={currentMonthName}
-                  currentMonthPercent={currentMonthPercent}
+                  currentMonthPercent={numberPercent}
                   totalExpense={totalExpense}
                   finalTotalIncome={finalTotalIncome}
                   chartData={chartData}
@@ -310,7 +313,7 @@ const SavingsPlan = (): JSX.Element => {
           ) : (
             <BoxEditFinance
               currentMonthName={currentMonthName}
-              currentMonthPercent={currentMonthPercent}
+              currentMonthPercent={numberPercent}
               totalExpense={totalExpense}
               finalTotalIncome={finalTotalIncome}
               numberPercent={numberPercent}
@@ -326,7 +329,7 @@ const SavingsPlan = (): JSX.Element => {
               renderItem={({item}) => <RenderItem item={item} />}
               contentContainerStyle={styles.flatStyle}
               showsVerticalScrollIndicator={false}
-              keyExtractor={item => item.key || `${item.id}`}
+              keyExtractor={item => item.id.toString()}
             />
           </View>
         </>

@@ -54,6 +54,7 @@ import PhysicalCashIcon from '@/assets/svg/PhysicalCashIcon.svg';
 import CreditCard from '@/assets/svg/CreditCard.svg';
 import DebitCardIcon from '@/assets/svg/DebitCardIcon.svg';
 import MessagerIcon from '@/assets/svg/MessagerIcon.svg';
+import EditPlanIcon from '@/assets/svg/EditPlanIcon.svg';
 
 export {
   AddIcon,
@@ -112,4 +113,5 @@ export {
   CreditCard,
   DebitCardIcon,
   MessagerIcon,
+  EditPlanIcon,
 };

@@ -34,3 +34,12 @@ export const monthsOfYear = [
 export type Insign = 'statistics' | 'savingsplan';
 export type InsignTransaction = 'income' | 'expense';
 export type TimeFrame = 'daily' | 'monthly' | 'yearly';
+
+export const percentOptions = [
+  {id: 1, numberPercent: 5},
+  {id: 2, numberPercent: 10},
+  {id: 3, numberPercent: 15},
+  {id: 4, numberPercent: 20},
+  {id: 5, numberPercent: 25},
+  {id: 6, numberPercent: 30},
+];

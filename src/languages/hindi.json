@@ -93,5 +93,21 @@
   "sep": "सितंबर",
   "oct": "अक्टूबर",
   "nov": "नवंबर",
-  "dec": "दिसंबर"
+  "dec": "दिसंबर",
+  "plan": "योजना",
+  "new_plan": "नई योजना",
+  "enter_parameters": "महीने के मान दर्ज करें:",
+  "fixed_income": "स्थायी आय",
+  "fixed_costs": "स्थायी खर्च",
+  "save": "सहेजें",
+  "current_plan": "वर्तमान योजना",
+  "today": "आज है",
+  "and_you_spent": "और आपने खर्च किया:",
+  "you_can_spend": "आप खर्च कर सकते हैं:",
+  "edit_current_plan": "वर्तमान योजना संपादित करें",
+  "delete_current_plan": "वर्तमान योजना हटाएं",
+  "do_you_really_want_to_delete": "क्या आप वास्तव में हटाना चाहते हैं",
+  "the_current_plan": "वर्तमान योजना?",
+  "yes": "हाँ",
+  "no": "नहीं"
 }

@@ -92,5 +92,21 @@
   "sep": "Sep",
   "oct": "Oct",
   "nov": "Nov",
-  "dec": "Dec"
+  "dec": "Dec",
+  "plan": "Plan",
+  "new_plan": "New Plan",
+  "enter_parameters": "Enter the parameters of the month :",
+  "fixed_income": "Fixed income",
+  "fixed_costs": "Fixed costs",
+  "save": "Save",
+  "current_plan": "Current plan",
+  "today": "Today is",
+  "and_you_spent": "and you spent:",
+  "you_can_spend": "You can spend:",
+  "edit_current_plan": "Edit Current Plan",
+  "delete_current_plan": "Delete Current Plan",
+  "do_you_really_want_to_delete": "Do you really want to delete",
+  "the_current_plan": "the current plan?",
+  "yes": "Yes",
+  "no": "No"
 }

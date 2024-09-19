@@ -19,4 +19,5 @@ export const colors = {
   midnightBlue: '#211F46',
   white_transparent_10: 'rgba(255, 255, 255, 0.1)',
   white_transparent_20: 'rgba(255, 255, 255, 0.2)',
+  darkIndigo: '#19173D80',
 };

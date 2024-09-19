@@ -92,5 +92,21 @@
   "sep": "T9",
   "oct": "T10",
   "nov": "T11",
-  "dec": "T12"
+  "dec": "T12",
+  "plan": "Kế hoạch",
+  "new_plan": "Kế hoạch mới",
+  "enter_parameters": "Nhập các tham số của tháng:",
+  "fixed_income": "Thu nhập cố định",
+  "fixed_costs": "Chi phí cố định",
+  "save": "Lưu",
+  "current_plan": "Kế hoạch hiện tại",
+  "today": "Hôm nay là",
+  "and_you_spent": "và bạn đã chi tiêu:",
+  "you_can_spend": "Bạn có thể chi tiêu:",
+  "edit_current_plan": "Chỉnh sửa Kế hoạch Hiện tại",
+  "delete_current_plan": "Xóa Kế hoạch Hiện tại",
+  "do_you_really_want_to_delete": "Bạn có thật sự muốn xóa",
+  "the_current_plan": "kế hoạch hiện tại?",
+  "yes": "Có",
+  "no": "Không"
 }

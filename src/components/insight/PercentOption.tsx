@@ -5,7 +5,7 @@ import {typography} from '@/themes/typography';
 
 type PercentOptionProps = {
   options: {id: number; numberPercent: number}[];
-  selectedPercent: number | null;
+  selectedPercent: number;
   setSelectedPercent: (value: number) => void;
 };
 
@@ -23,7 +23,7 @@ const PercentOption = ({
             styles.boxPercent,
             selectedPercent === item.numberPercent && styles.selectBoxPercent,
           ]}
-          onPress={() => setSelectedPercent(item.numberPercent)}>
+          onPress={(): void => setSelectedPercent(item.numberPercent)}>
           <Text
             style={[
               typography.Heading23,

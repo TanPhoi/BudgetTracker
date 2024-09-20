@@ -175,7 +175,7 @@ const Home = ({navigation}: HomeProps): JSX.Element => {
             start={{x: 0, y: 1}}
             end={{x: 1, y: 1}}
             style={styles.button}>
-            <AddIcon width={17} height={29} />
+            <AddIcon width={17} height={29} color="white" />
           </LinearGradient>
         </TouchableOpacity>
       </View>

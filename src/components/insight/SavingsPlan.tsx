@@ -14,7 +14,14 @@ import {typography} from '@/themes/typography';
 import {getSelectCurrentDateTime} from '@/utils/getSelectCurrentDateTime';
 import {getStartAndEndOfCurrentMonth} from '@/utils/getStartAndEndOfCurrentMonth';
 import {parseDateString} from '@/utils/parseDateString';
-import React, {JSX, memo, useCallback, useEffect, useState} from 'react';
+import React, {
+  JSX,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {ActivityIndicator, Alert, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {getCurrentDate} from '@/utils/getCurrentDate';
@@ -30,22 +37,19 @@ import {FinancialFixed} from '@/models/financialFixed.model';
 import {t} from 'i18next';
 
 const SavingsPlan = (): JSX.Element => {
-  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
-  const [finalTotalIncome, setFinalTotalIncome] = useState<number>(0);
   const [totalExpense, setTotalExpense] = useState<number>(0);
   const [financialFixeds, setFinancialFixeds] = useState<FinancialFixed[]>([]);
   const [currentMonthName, setCurrentMonthName] = useState<string>('');
   const [currentFixedIncome, setCurrentFixedIncome] = useState<number>(0);
   const [currentFixedCosts, setCurrentFixedCosts] = useState<number>(0);
   const [numberPercent, setNumberPercent] = useState<number>(0);
-  const [idFinancialFixeds, setIdFinancialFixeds] = useState<string | null>(
-    null,
-  );
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showBox, setShowBox] = useState<boolean>(false);
-  const [showBoxEdit, setShowBoxEdit] = useState<boolean>(false);
-  const [showBoxDelete, setShowBoxDelete] = useState<boolean>(false);
+  const [idFinancialFixeds, setIdFinancialFixeds] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<
+    'edit' | 'delete' | 'create' | 'chart'
+  >('create');
 
   useFocusEffect(
     useCallback(() => {
@@ -73,7 +77,7 @@ const SavingsPlan = (): JSX.Element => {
         });
       };
 
-      const getFinancialFixeds = () => {
+      const getFinancialFixeds = (): void => {
         getFinancialFixedsService<FinancialFixed>().then(financialFixeds => {
           if (financialFixeds) {
             setFinancialFixeds(financialFixeds);
@@ -89,17 +93,17 @@ const SavingsPlan = (): JSX.Element => {
               setCurrentFixedIncome(filteredFinancialFixeds[0].fixedIncome);
               setCurrentFixedCosts(filteredFinancialFixeds[0].fixedCosts);
               setNumberPercent(filteredFinancialFixeds[0].percent);
-              setIdFinancialFixeds(filteredFinancialFixeds[0].key || null);
+              setIdFinancialFixeds(filteredFinancialFixeds[0].key || '');
               const itemDate = new Date(filteredFinancialFixeds[0].time);
               const month = itemDate.getMonth() + 1;
               if (getSelectCurrentDateTime('month') === month) {
-                setShowBox(true);
+                setModalType('chart');
               }
             } else {
               setCurrentFixedIncome(0);
               setCurrentFixedCosts(0);
               setNumberPercent(0);
-              setIdFinancialFixeds(null);
+              setIdFinancialFixeds('');
             }
 
             setCurrentMonthName(monthsOfYear[currentDate.getMonth()]);
@@ -111,17 +115,16 @@ const SavingsPlan = (): JSX.Element => {
       fetchTransactions();
 
       const timer = setTimeout(() => {
-        setLoading(false);
+        setIsLoading(true);
       }, 2000);
 
       return () => clearTimeout(timer);
     }, []),
   );
 
-  useEffect(() => {
-    const newTotalIncome = totalIncome + currentFixedIncome - currentFixedCosts;
-    setFinalTotalIncome(newTotalIncome);
-  }, [totalIncome, currentFixedIncome, currentFixedCosts, totalExpense]);
+  const finalTotalIncome = useMemo((): number => {
+    return totalIncome + currentFixedIncome - currentFixedCosts;
+  }, [totalIncome, currentFixedIncome, currentFixedCosts]);
 
   const handleSave = (
     fixedIncome: number,
@@ -149,7 +152,7 @@ const SavingsPlan = (): JSX.Element => {
       setNumberPercent(numberPercent);
       setCurrentMonthName(monthsOfYear[currentDate.getMonth()]);
     });
-    setShowBox(true);
+    setModalType('chart');
   };
 
   const calculatePercentageRemaining = useCallback(
@@ -163,49 +166,33 @@ const SavingsPlan = (): JSX.Element => {
   const getChartData = (
     data: Transaction[],
   ): {value: number; title: string}[] => {
-    const filteredData = data.filter(item => item.type === 'expense');
-    if (filteredData.length === 0) {
-      return [{value: 0, title: ''}];
-    }
-
-    const totals: {[key: string]: number} = {};
     const {start, end} = getStartAndEndOfCurrentMonth();
+    const totals = data
+      .filter(item => item.type === 'expense')
+      .reduce<{[key: string]: number}>((acc, item) => {
+        const time = parseDateString(item.currentTime);
+        if (time >= start && time <= end) {
+          const date = time.toISOString().split('T')[0];
+          acc[date] = (acc[date] || 0) + item.amount;
+        }
+        return acc;
+      }, {});
 
-    filteredData.forEach(item => {
-      const time = parseDateString(item.currentTime);
-      if (time >= start && time <= end) {
-        const formattedDate = time.toISOString().split('T')[0];
-        totals[formattedDate] = (totals[formattedDate] || 0) + item.amount;
-      }
-    });
+    if (Object.keys(totals).length === 0) return [{value: 0, title: ''}];
 
-    const chartData: {title: string; value: number}[] = [];
-    chartData.push({title: '', value: 100});
-
-    let accumulatedPercentage = 100;
     let totalSpent = 0;
-
-    Object.keys(totals)
+    const chartData = Object.keys(totals)
       .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .forEach(date => {
-        const dailyTotal = totals[date] || 0;
-
-        totalSpent += dailyTotal;
-
-        let percentage =
+      .map(date => {
+        totalSpent += totals[date] || 0;
+        const percentage =
           totalIncome > 0
             ? calculatePercentageRemaining(finalTotalIncome, totalSpent)
             : 0;
-
-        accumulatedPercentage = percentage;
-
-        chartData.push({
-          title: date,
-          value: accumulatedPercentage,
-        });
+        return {title: date, value: percentage};
       });
 
-    return chartData;
+    return [{title: '', value: 100}, ...chartData];
   };
 
   const handleDelete = useCallback(
@@ -218,36 +205,32 @@ const SavingsPlan = (): JSX.Element => {
           setFinancialFixeds(prev =>
             prev.filter(item => item.key !== financialFixedId),
           );
-          setShowBoxDelete(false);
-          setShowBox(false);
+          setModalType('create');
         }
       } else {
-        setShowBoxDelete(false);
+        setModalType('chart');
       }
     },
-    [idFinancialFixeds, setFinancialFixeds, setShowBoxDelete],
+    [idFinancialFixeds, setFinancialFixeds],
   );
 
   const handleEdit = useCallback((): void => {
-    if (idFinancialFixeds !== null && numberPercent !== null) {
+    if (idFinancialFixeds && numberPercent) {
       editFinancialFixedService(idFinancialFixeds, {
         percent: numberPercent,
       }).then(() => {
-        setFinancialFixeds(prev =>
-          prev.map(item =>
-            item.key === idFinancialFixeds
-              ? {...item, percent: numberPercent}
-              : item,
-          ),
+        const updatedFinancialFixeds = financialFixeds.map(item =>
+          item.key === idFinancialFixeds
+            ? {...item, percent: numberPercent}
+            : item,
         );
+        setFinancialFixeds(updatedFinancialFixeds);
         setNumberPercent(prev =>
           prev !== numberPercent ? numberPercent : prev,
         );
       });
 
-      setShowBoxEdit(false);
-    } else {
-      Alert.alert(ERROR_MISSING_FIELD);
+      setModalType('chart');
     }
   }, [idFinancialFixeds, numberPercent]);
 
@@ -281,36 +264,15 @@ const SavingsPlan = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      {loading ? (
+      {!isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator />
         </View>
       ) : (
         <>
-          {!showBox ? (
-            <BoxAddFinance onSave={handleSave} />
-          ) : !showBoxEdit ? (
-            <>
-              {showBoxDelete ? (
-                <BoxDeleteFinance
-                  handleDelete={handleDelete}
-                  setShowBoxDelete={setShowBoxDelete}
-                  currentMonthName={currentMonthName}
-                  currentMonthPercent={numberPercent}
-                />
-              ) : (
-                <BoxChartFinance
-                  currentMonthName={currentMonthName}
-                  currentMonthPercent={numberPercent}
-                  totalExpense={totalExpense}
-                  finalTotalIncome={finalTotalIncome}
-                  chartData={chartData}
-                  onPressEdit={(): void => setShowBoxEdit(true)}
-                  onPressDelete={(): void => setShowBoxDelete(true)}
-                />
-              )}
-            </>
-          ) : (
+          {modalType === 'create' && <BoxAddFinance onSave={handleSave} />}
+
+          {modalType === 'edit' && (
             <BoxEditFinance
               currentMonthName={currentMonthName}
               currentMonthPercent={numberPercent}
@@ -319,7 +281,28 @@ const SavingsPlan = (): JSX.Element => {
               numberPercent={numberPercent}
               setNumberPercent={setNumberPercent}
               handleEdit={handleEdit}
-              setShowBoxEdit={setShowBoxEdit}
+              setModalType={setModalType}
+            />
+          )}
+
+          {modalType === 'delete' && (
+            <BoxDeleteFinance
+              handleDelete={handleDelete}
+              setModalType={setModalType}
+              currentMonthName={currentMonthName}
+              currentMonthPercent={numberPercent}
+            />
+          )}
+
+          {modalType === 'chart' && (
+            <BoxChartFinance
+              currentMonthName={currentMonthName}
+              currentMonthPercent={numberPercent}
+              totalExpense={totalExpense}
+              finalTotalIncome={finalTotalIncome}
+              chartData={chartData}
+              onPressEdit={(): void => setModalType('edit')}
+              onPressDelete={(): void => setModalType('delete')}
             />
           )}
 

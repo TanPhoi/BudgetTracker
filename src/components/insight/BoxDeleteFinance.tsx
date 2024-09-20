@@ -11,38 +11,33 @@ type BoxDeleteFinanceProps = {
   currentMonthName: string;
   currentMonthPercent: number;
   handleDelete: (isConfirmed: 'yes' | 'no') => void;
-  setShowBoxDelete: (show: boolean) => void;
+  setModalType: (type: 'edit' | 'delete' | 'create' | 'chart') => void;
 };
 
 const BoxDeleteFinance = ({
   currentMonthName,
   currentMonthPercent,
   handleDelete,
-  setShowBoxDelete,
+  setModalType,
 }: BoxDeleteFinanceProps): JSX.Element => {
-  const [isConfirmed, setIsConfirmed] = useState<'yes' | 'no'>();
+  const [confirmationStatus, setConfirmationStatus] = useState<'yes' | 'no'>(
+    'yes',
+  );
+  const isConfirmed = confirmationStatus === 'yes';
 
-  const handleYesPress = () => {
-    setIsConfirmed('yes');
+  const handleConfirmationStatus = (status: 'yes' | 'no'): void => {
+    setConfirmationStatus(status);
   };
 
-  const handleNoPress = () => {
-    setIsConfirmed('no');
-  };
-
-  const handleDeletePress = () => {
-    if (isConfirmed) {
-      handleDelete(isConfirmed);
-    } else {
-      return;
-    }
+  const handleConfirmDeletion = (): void => {
+    handleDelete(confirmationStatus);
   };
 
   return (
     <View style={styles.planEdit}>
       <View>
         <View style={styles.boxHeader}>
-          <TouchableOpacity onPress={(): void => setShowBoxDelete(false)}>
+          <TouchableOpacity onPress={(): void => setModalType('chart')}>
             <BackIcon width={16} height={16} />
           </TouchableOpacity>
           <Text style={typography.Heading6}>{t('delete_current_plan')}</Text>
@@ -64,24 +59,24 @@ const BoxDeleteFinance = ({
 
         <View style={styles.boxButton}>
           <TouchableOpacity
-            style={[styles.box, isConfirmed === 'yes' && styles.boxConfirmed]}
-            onPress={handleYesPress}>
+            style={[styles.box, isConfirmed && styles.boxConfirmed]}
+            onPress={(): void => handleConfirmationStatus('yes')}>
             <Text
               style={[
                 typography.Heading17,
-                isConfirmed === 'yes' && styles.selectTxtConfirmed,
+                isConfirmed && styles.selectTxtConfirmed,
               ]}>
               {t('yes')}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.box, isConfirmed === 'no' && styles.boxConfirmed]}
-            onPress={handleNoPress}>
+            style={[styles.box, !isConfirmed && styles.boxConfirmed]}
+            onPress={(): void => handleConfirmationStatus('no')}>
             <Text
               style={[
                 typography.Heading17,
-                isConfirmed === 'no' && styles.selectTxtConfirmed,
+                !isConfirmed && styles.selectTxtConfirmed,
               ]}>
               {t('no')}
             </Text>
@@ -90,7 +85,7 @@ const BoxDeleteFinance = ({
       </View>
 
       <View style={styles.button}>
-        <Button label={'Delete'} onPress={handleDeletePress} />
+        <Button label={'Delete'} onPress={handleConfirmDeletion} />
       </View>
     </View>
   );

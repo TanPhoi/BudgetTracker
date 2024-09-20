@@ -5,10 +5,11 @@ import {colors} from '@/themes/colors';
 import {spacing} from '@/themes/spacing';
 import {typography} from '@/themes/typography';
 import React, {useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import PercentOption from './PercentOption';
 import {t} from 'i18next';
 import {percentOptions} from '@/constants/insight.contant';
+import {ERROR_MISSING_FIELD} from '@/constants/message.constant';
 
 type BoxAddFinanceProps = {
   onSave: (
@@ -19,13 +20,15 @@ type BoxAddFinanceProps = {
 };
 
 const BoxAddFinance = ({onSave}: BoxAddFinanceProps): JSX.Element => {
-  const [fixedIncome, setFixedIncome] = useState<number | null>(null);
-  const [fixedCosts, setFixedCosts] = useState<number | null>(null);
-  const [numberPercent, setNumberPercent] = useState<number | null>(null);
+  const [fixedIncome, setFixedIncome] = useState<number>(0);
+  const [fixedCosts, setFixedCosts] = useState<number>(0);
+  const [numberPercent, setNumberPercent] = useState<number>(0);
 
-  const handleSave = () => {
-    if (fixedIncome !== null && fixedCosts !== null && numberPercent !== null) {
+  const handleSave = (): void => {
+    if (fixedIncome && fixedCosts && numberPercent) {
       onSave(fixedIncome, fixedCosts, numberPercent);
+    } else {
+      Alert.alert(ERROR_MISSING_FIELD);
     }
   };
 

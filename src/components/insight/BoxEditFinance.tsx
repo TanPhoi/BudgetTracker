@@ -1,5 +1,5 @@
-import React, {FC, memo} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Alert} from 'react-native';
+import React, {memo} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Button from '@/commons/buttons/Button';
 import {BackIcon} from '@/assets/svg';
 import {colors} from '@/themes/colors';
@@ -16,10 +16,10 @@ type BoxEditFinanceProps = {
   currentMonthPercent: number;
   totalExpense: number;
   finalTotalIncome: number;
-  numberPercent: number | null;
+  numberPercent: number;
   setNumberPercent: (value: number) => void;
   handleEdit: () => void;
-  setShowBoxEdit: (show: boolean) => void;
+  setModalType: (type: 'edit' | 'delete' | 'create' | 'chart') => void;
 };
 
 const BoxEditFinance = ({
@@ -30,13 +30,13 @@ const BoxEditFinance = ({
   numberPercent,
   setNumberPercent,
   handleEdit,
-  setShowBoxEdit,
+  setModalType,
 }: BoxEditFinanceProps): JSX.Element => {
   return (
     <View style={styles.planEdit}>
       <View>
         <View style={styles.boxHeader}>
-          <TouchableOpacity onPress={() => setShowBoxEdit(false)}>
+          <TouchableOpacity onPress={(): void => setModalType('chart')}>
             <BackIcon width={16} height={16} />
           </TouchableOpacity>
           <Text style={typography.Heading6}>{t('edit_current_plan')}</Text>

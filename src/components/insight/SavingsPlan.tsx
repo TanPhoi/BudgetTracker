@@ -155,13 +155,13 @@ const SavingsPlan = (): JSX.Element => {
     setModalType('chart');
   };
 
-  const calculatePercentageRemaining = useCallback(
-    (total: number, spent: number): number => {
-      const remainingBalance = total - spent;
-      return Math.round((remainingBalance / total) * 100);
-    },
-    [],
-  );
+  const calculatePercentageRemaining = (
+    total: number,
+    spent: number,
+  ): number => {
+    const remainingBalance = total - spent;
+    return Math.round((remainingBalance / total) * 100);
+  };
 
   const getChartData = (
     data: Transaction[],
